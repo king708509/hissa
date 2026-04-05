@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>INFECTED_SYSTEM_Ver222</title>
+    <title>INFECTED_HIS_TEM_VIRUS</title>
     <style>
         /* [CORE_ENGINE_STYLE] */
         body { 
@@ -11,19 +11,11 @@
             font-family: 'Consolas', 'Courier New', monospace; 
             margin: 0; overflow: hidden; height: 100dvh; 
             user-select: none;
-            transition: filter 0.1s; /* 色彩反転用 */
+            transition: filter 0.1s;
         }
-        /* 強制操作不能レイヤー */
-        #freeze-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            z-index: 20000; display: none; cursor: wait;
-        }
-        /* 色彩反転クラス */
+        #freeze-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 20000; display: none; cursor: wait; }
         .system-invert { filter: invert(1) hue-rotate(180deg); }
-
         #matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; pointer-events: none; }
-        
-        /* [GHOST_AUDIO_UNIT] */
         #hissa-video-container { position: absolute; top: -999px; left: -999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
         /* [SYSTEM_BOOT_SEQUENCE] */
@@ -40,63 +32,50 @@
         .sys-header-text { margin: 0; font-size: 1.1rem; letter-spacing: 6px; text-shadow: 0 0 10px #0f0; }
         .main-dashboard { padding: 20px; display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto; position: relative; z-index: 500; }
         
-        /* [OMEDETA_MODULE] */
         .counter-panel { border: 3px double #f0f; background: rgba(30, 0, 30, 0.85); padding: 15px; text-align: center; box-shadow: 0 0 20px rgba(255,0,255,0.3); position: relative; }
         .counter-label { color: #f0f; font-size: 0.9rem; font-weight: bold; display: block; margin-bottom: 5px; }
         .counter-value { color: #fff; font-size: 3rem; font-weight: 900; text-shadow: 0 0 15px #f0f; }
-        
-        /* リフレッシュボタン */
-        #count-reset-btn { 
-            position: absolute; top: 10px; right: 10px; 
-            background: #f00; color: #fff; border: none; font-size: 0.6rem; 
-            padding: 5px 8px; cursor: pointer; font-weight: bold; box-shadow: 0 0 10px #f00;
-        }
+        #count-reset-btn { position: absolute; top: 10px; right: 10px; background: #f00; color: #fff; border: none; font-size: 0.6rem; padding: 5px 8px; cursor: pointer; font-weight: bold; box-shadow: 0 0 10px #f00; }
 
         .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .status-node { border: 1px solid #0f0; background: rgba(0, 30, 0, 0.8); padding: 10px; font-size: 0.75rem; box-shadow: inset 0 0 8px #0f0; }
-
-        /* [SUMMON_CORE] */
-        #summon-trigger { 
-            width: 100%; padding: 25px; background: #0f0; color: #000; border: none; 
-            font-size: 1.8rem; font-weight: 900; cursor: pointer; border-radius: 8px; 
-            box-shadow: 0 10px 0 #070; transition: 0.05s; margin-top: 10px;
-        }
+        #summon-trigger { width: 100%; padding: 25px; background: #0f0; color: #000; border: none; font-size: 1.8rem; font-weight: 900; cursor: pointer; border-radius: 8px; box-shadow: 0 10px 0 #070; transition: 0.05s; margin-top: 10px; }
         #summon-trigger:active { transform: translateY(6px); box-shadow: 0 4px 0 #070; }
 
         /* [ANIMATIONS] */
         .ghost-text { position: absolute; font-weight: 900; pointer-events: none; z-index: 800; animation: ghost-float 0.8s ease-out forwards; }
         @keyframes ghost-float { 0% { opacity: 0; transform: scale(0.5); } 20% { opacity: 1; } 100% { opacity: 0; transform: scale(3) translateY(-200px); } }
 
-        /* [TRAP_OVERLAY] */
+        /* [TRAP_OVERLAY_SYSTEM] */
         #kyusai-overlay { position: fixed; top: -110%; left: 0; width: 100%; height: 100%; background: #000; z-index: 9000; display: flex; align-items: center; justify-content: center; transition: top 1s cubic-bezier(0.8, 0, 0.2, 1); cursor: pointer; border-bottom: 10px solid #f00; }
         #kyusai-text { color: #fff; font-size: 3.5rem; font-weight: bold; text-align: center; }
         .glitch-fx { animation: glitch-anim 0.1s infinite; }
         @keyframes glitch-anim { 0% { transform: translate(2px, -2px); text-shadow: -3px 0 #f0f; } 50% { transform: translate(-2px, 2px); text-shadow: 3px 0 #0ff; } 100% { transform: translate(0); } }
         
-        #fake-skip-btn { 
+        /* 復活した右上の×ボタン */
+        #trap-close-btn { position: absolute; top: 10px; right: 10px; color: #333; font-size: 1.2rem; padding: 15px; z-index: 9010; font-weight: bold; cursor: pointer; }
+
+        /* 5秒カウントダウンスキップボタン */
+        #skip-countdown-btn { 
             position: absolute; bottom: 30px; right: 30px; 
-            padding: 10px 25px; background: rgba(255,255,255,0.1); color: #fff; 
-            border: 1px solid #fff; font-size: 1rem; cursor: pointer; 
-            display: none; z-index: 9020;
+            padding: 12px 25px; background: rgba(255,255,255,0.1); color: #fff; 
+            border: 1px solid #fff; font-size: 0.9rem; cursor: pointer; 
+            display: none; z-index: 9020; min-width: 180px; text-align: center;
         }
 
-        /* [DANMAKU] */
         .danmaku-msg { position: fixed; white-space: nowrap; color: #fff; font-size: 2.2rem; font-weight: 900; z-index: 9500; cursor: pointer; text-shadow: 3px 3px 0 #000; }
-        
-        /* [BANNERS] */
         #koyoi-banner { display: none; position: fixed; bottom: -120px; left: 0; width: 100%; height: 75px; background: linear-gradient(90deg, #f0f, #70f); color: #fff; z-index: 1000; align-items: center; justify-content: center; font-weight: 900; transition: 0.5s; cursor: pointer; font-size: 1.2rem; }
-        
-        /* [BANANA_POPUP] */
         #banana-popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; padding: 30px; border: 8px solid #f0f; z-index: 11000; text-align: center; width: 85%; box-shadow: 20px 20px 0 #000; }
         .banana-btn { padding: 15px 35px; margin: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
-        
         .alert-flash { animation: flash-bg 0.1s infinite; }
         @keyframes flash-bg { 0% { background: #000; } 50% { background: #600; } 100% { background: #000; } }
     </style>
 </head>
 <body id="main-body">
 
-<div id="freeze-overlay"></div> <div id="hissa-video-container">
+<div id="freeze-overlay"></div>
+
+<div id="hissa-video-container">
     <div id="yt-bgm"></div><div id="yt-hai"></div><div id="yt-chan"></div><div id="yt-summon"></div>
 </div>
 
@@ -109,8 +88,9 @@
 </div>
 
 <div id="kyusai-overlay">
+    <div id="trap-close-btn">×</div>
     <div id="kyusai-text">救済をウケる</div>
-    <div id="fake-skip-btn">広告をスキップ ≫</div>
+    <div id="skip-countdown-btn">広告をスキップまで 5...</div>
 </div>
 
 <canvas id="matrix-bg"></canvas>
@@ -147,9 +127,9 @@
     let readyCount = 0;
     const PH_LINK = "https://jp.pornhub.com/";
     const HERR_LINK = "https://m.youtube.com/@Herr0404jp";
+    const ALT_LINK = "https://www.altqw.com/";
     const FANZA_LINK = "https://www.dmm.co.jp/top/-/fanza/";
 
-    // [AUDIO_INITIALIZATION]
     function onYouTubeIframeAPIReady() {
         const setup = (p, id, vol = 100) => {
             players[p] = new YT.Player('yt-' + p, {
@@ -161,17 +141,11 @@
                 } }
             });
         };
-        setup('bgm', 'eap7eQOkwTI', 35);
-        setup('hai', '7jfoXGh77xA');
-        setup('chan', 'Wj7_EJR755o');
-        setup('summon', '6k6wCRCKLn4');
+        setup('bgm', 'eap7eQOkwTI', 35); setup('hai', '7jfoXGh77xA'); setup('chan', 'Wj7_EJR755o'); setup('summon', '6k6wCRCKLn4');
     }
 
-    // [BOOT_SEQUENCE]
     document.getElementById('boot-init-btn').onclick = function() {
-        // ここでBGMを先行再生してブロック解除
         if(players.bgm) players.bgm.playVideo();
-
         this.style.display = 'none';
         document.getElementById('boot-console-wrap').style.display = 'block';
         const log = document.getElementById('boot-log'), bar = document.getElementById('boot-progress-bar');
@@ -196,18 +170,8 @@
         document.getElementById('omedeta-display').innerText = localStorage.getItem('hissa_lucky_count') || 0;
         document.getElementById('sys-ip').innerText = `124.${Math.floor(Math.random()*255)}.8.10`;
         
-        setTimeout(() => {
-            const ov = document.getElementById('kyusai-overlay');
-            ov.style.top = '0';
-            document.getElementById('kyusai-text').classList.add('glitch-fx');
-            ov.onclick = (e) => { if(e.target.id !== 'fake-skip-btn') window.location.href = PH_LINK; };
-            setTimeout(() => {
-                const skipBtn = document.getElementById('fake-skip-btn');
-                skipBtn.style.display = 'block';
-                skipBtn.onclick = (e) => { e.stopPropagation(); window.location.href = FANZA_LINK; };
-            }, 5000);
-            startDanmaku();
-        }, 60000);
+        // 救済演出タイマー
+        setTimeout(showKyusai, 60000);
 
         setInterval(() => { document.getElementById('sys-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
         setInterval(() => { document.getElementById('banana-popup').style.display = 'block'; }, 6000);
@@ -218,42 +182,73 @@
         setInterval(() => { document.getElementById('sys-loc').innerText = ["マリアナ海溝", "背後", "あなたの脳内", "ブラジル", "Hissaの寝床"][Math.floor(Math.random()*5)]; }, 3000);
     }
 
-    // [SUMMON_LOGIC]
+    function showKyusai() {
+        const ov = document.getElementById('kyusai-overlay');
+        ov.style.top = '0';
+        document.getElementById('kyusai-text').classList.add('glitch-fx');
+        
+        // 背景クリックでPHへ
+        ov.onclick = (e) => { 
+            if(e.target.id !== 'skip-countdown-btn' && e.target.id !== 'trap-close-btn') window.location.href = PH_LINK; 
+        };
+
+        // スキップボタンのカウントダウン処理
+        const skipBtn = document.getElementById('skip-countdown-btn');
+        let count = 5;
+        skipBtn.style.display = 'block';
+        skipBtn.innerText = `広告をスキップまで ${count}...`;
+
+        const countItv = setInterval(() => {
+            count--;
+            if(count > 0) {
+                skipBtn.innerText = `広告をスキップまで ${count}...`;
+            } else {
+                clearInterval(countItv);
+                skipBtn.innerText = `広告をスキップ ≫`;
+            }
+        }, 1000);
+
+        skipBtn.onclick = (e) => {
+            e.stopPropagation();
+            if(count > 0) {
+                window.location.href = FANZA_LINK; // カウント中はFANZA
+            } else {
+                ov.style.top = '-110%'; // 0秒なら閉じる
+            }
+        };
+
+        startDanmaku();
+    }
+
+    document.getElementById('trap-close-btn').onclick = (e) => {
+        e.stopPropagation();
+        window.location.href = ALT_LINK; // 右上「×」で別サイト
+    };
+
     document.getElementById('summon-trigger').onclick = () => {
         players.summon.seekTo(0); players.summon.playVideo();
-        
-        // 0.6% あたり演出（色彩反転＆フリーズ追加）
         if (Math.random() < 0.006) {
             let c = parseInt(localStorage.getItem('hissa_lucky_count') || 0) + 1;
             localStorage.setItem('hissa_lucky_count', c);
             document.getElementById('omedeta-display').innerText = c;
-            
-            // 演出開始
             document.body.classList.add('alert-flash');
             players.chan.seekTo(0); players.chan.playVideo();
             popMsg("ウフンっ♡ｿｳﾖﾝｯ♡", "#f0f");
-
-            // 1秒後に色彩反転＆操作不能フェーズへ（余韻）
             setTimeout(() => {
                 document.body.classList.remove('alert-flash');
                 document.getElementById('main-body').classList.add('system-invert');
                 document.getElementById('freeze-overlay').style.display = 'block';
-                
-                // 2秒間の絶望タイム後に解除
                 setTimeout(() => {
                     document.getElementById('main-body').classList.remove('system-invert');
                     document.getElementById('freeze-overlay').style.display = 'none';
                 }, 2000);
-
             }, 1000);
             return;
         }
-
         const s = ["どう、わぁたぁしぃ〜♡", "ハイパーボぃぃぃぃスッ！！！", "マッチッポンプッ", "アンタなぁ〜", "救済が必要ですな", "こんなものなの〜♡", "嫌いよ、度胸無し💢", "スー↴パー↴ボイース↗", "歓迎よ〜", "ガッタイ！！"];
         popMsg(s[Math.floor(Math.random()*s.length)]);
     };
 
-    // [RESET_LOGIC]
     document.getElementById('count-reset-btn').onclick = () => {
         if(confirm("COUNTをリセットしますか？")) {
             localStorage.setItem('hissa_lucky_count', 0);
@@ -268,7 +263,9 @@
     }
 
     function startDanmaku() {
-        setInterval(() => {
+        const dItv = setInterval(() => {
+            const ov = document.getElementById('kyusai-overlay');
+            if(ov.style.top !== '0px' && ov.style.top !== '0') { clearInterval(dItv); return; }
             const d = document.createElement('div'); d.className = 'danmaku-msg'; d.innerText = "ぽるのはぶはこちら";
             d.style.top = (Math.random()*85) + '%'; d.style.left = '110%';
             d.animate([{left:'110%'}, {left:'-150%'}], {duration:3000});
