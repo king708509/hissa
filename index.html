@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>INFECTED_HIS_TEM_VIRUS</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon.png">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
     <style>
         /* [CORE_ENGINE_STYLE] */
         body { 
@@ -17,6 +26,22 @@
         .system-invert { filter: invert(1) hue-rotate(180deg); }
         #matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; pointer-events: none; }
         #hissa-video-container { position: absolute; top: -999px; left: -999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+        /* [NEW: WARNING_SEQUENCE_STYLE] */
+        #warning-seq { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 15000; display: none; 
+            flex-direction: column; align-items: center; justify-content: center; 
+            padding: 20px; box-sizing: border-box;
+        }
+        .warning-box {
+            border: 2px solid #f00; padding: 25px; background: rgba(30,0,0,0.4);
+            box-shadow: 0 0 40px #f00; max-width: 400px; width: 100%;
+        }
+        #warning-text {
+            color: #fff; font-size: 1rem; line-height: 1.6; min-height: 120px;
+            white-space: pre-wrap; font-weight: bold;
+        }
 
         /* [SYSTEM_BOOT_SEQUENCE] */
         #boot-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
@@ -84,6 +109,13 @@
     </div>
 </div>
 
+<div id="warning-seq">
+    <div class="warning-box">
+        <h2 style="color:#f00; margin-top:0; font-size:1.2rem; text-shadow:0 0 10px #f00;">⚠ SYSTEM_WARNING</h2>
+        <div id="warning-text"></div>
+    </div>
+</div>
+
 <div id="kyusai-overlay">
     <div id="trap-close-btn">×</div>
     <div id="kyusai-text">救済をウケる</div>
@@ -139,15 +171,47 @@
                 } }
             });
         };
-        setup('bgm', 'eap7eQOkwTI', 20); // BGM音量を20に設定
+        setup('bgm', 'eap7eQOkwTI', 20); 
         setup('hai', '7jfoXGh77xA'); 
         setup('chan', 'Wj7_EJR755o'); 
         setup('summon', '6k6wCRCKLn4');
     }
 
+    // --- [NEW: WARNING_LOGIC] ---
+    function startWarningSequence() {
+        const seq = document.getElementById('warning-seq');
+        const txt = document.getElementById('warning-text');
+        seq.style.display = 'flex';
+        
+        const msg = "THIS IS A JOKE GAME.\nTARGET AGE: 18+\n\nこのシステムは18歳以上を対象とした\nジョークプログラムです。\n全ての演出はフィクションであり、\n実在の人物・団体とは関係ありません。\n\nDO YOU UNDERSTAND?";
+        let i = 0;
+        
+        function type() {
+            if (i < msg.length) {
+                txt.innerText += msg.charAt(i);
+                i++;
+                setTimeout(type, 35);
+            }
+        }
+        type();
+
+        setTimeout(() => {
+            seq.style.transition = 'opacity 0.8s';
+            seq.style.opacity = '0';
+            setTimeout(() => {
+                seq.style.display = 'none';
+                runActualBoot(); 
+            }, 800);
+        }, 5500);
+    }
+
     document.getElementById('boot-init-btn').onclick = function() {
         if(players.bgm) players.bgm.playVideo();
         this.style.display = 'none';
+        startWarningSequence(); // 警告からスタート
+    };
+
+    function runActualBoot() {
         document.getElementById('boot-console-wrap').style.display = 'block';
         const log = document.getElementById('boot-log'), bar = document.getElementById('boot-progress-bar');
         const lines = ["BYPASSING FIREWALL...", "IP_FOUND: 124.X.X.X", "ACCESSING_WEB_STORAGE...", "INJECTING_GHOST_SCRIPT...", "UPLOADING_USER_DATA: 15%", "UPLOADING_USER_DATA: 88%", "VIRUS_STATUS: GREEN", "ACCESS_GRANTED."];
@@ -163,7 +227,7 @@
                 }
             }
         }, 70);
-    };
+    }
 
     function startCore() {
         document.getElementById('boot-overlay').style.display = 'none';
@@ -171,7 +235,6 @@
         document.getElementById('omedeta-display').innerText = localStorage.getItem('hissa_lucky_count') || 0;
         document.getElementById('sys-ip').innerText = `124.${Math.floor(Math.random()*255)}.8.10`;
         
-        // 初回救済演出
         setTimeout(showKyusai, 60000);
 
         setInterval(() => { document.getElementById('sys-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
@@ -222,7 +285,6 @@
         const ov = document.getElementById('kyusai-overlay');
         ov.style.top = '-110%';
         if(danmakuItv) clearInterval(danmakuItv);
-        // 閉じたタイミングから再度1分後に表示
         setTimeout(showKyusai, 60000);
     }
 
@@ -232,7 +294,6 @@
     };
 
     document.getElementById('summon-trigger').onclick = () => {
-        // 召喚音の再生（BGMとは独立）
         if(players.summon) { players.summon.seekTo(0); players.summon.playVideo(); }
         
         if (Math.random() < 0.006) {
@@ -240,7 +301,6 @@
             localStorage.setItem('hissa_lucky_count', c);
             document.getElementById('omedeta-display').innerText = c;
             
-            // あたり演出
             document.body.classList.add('alert-flash');
             if(players.chan) { players.chan.seekTo(0); players.chan.playVideo(); }
             popMsg("ウフンっ♡ｿｳﾖﾝｯ♡", "#f0f");
