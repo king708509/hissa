@@ -2,70 +2,68 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HISSA WATCHER [ULTIMATE-FIX] v9.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HISSA WATCHER [ULTIMATE]</title>
     <style>
-        body { background-color: #000; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
-        #matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.2; }
-        .scanline { width: 100%; height: 2px; background: rgba(255, 0, 0, 0.5); position: absolute; top: 0; z-index: 10; animation: scan 4s linear infinite; pointer-events: none; }
-        @keyframes scan { from { top: 0; } to { top: 100%; } }
+        body { background-color: #000; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; height: 100vh; }
+        #matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; }
         #start-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-        #start-btn { padding: 30px; border: 4px solid #0f0; background: none; color: #0f0; font-size: 2rem; font-weight: bold; cursor: pointer; box-shadow: 0 0 30px #0f0; }
-        header { padding: 15px; border-bottom: 2px solid #0f0; background: rgba(0, 30, 0, 0.9); }
-        .container { height: 85vh; overflow-y: auto; padding: 20px; }
-        .panel { border: 1px solid #0f0; padding: 10px; margin-bottom: 15px; background: rgba(0, 10, 0, 0.9); box-shadow: inset 0 0 10px #0f0; text-align: left; font-size: 0.9rem; }
-        .btn-summon { background: #0f0; color: #000; border: none; padding: 20px; width: 100%; font-size: 1.5rem; font-weight: bold; cursor: pointer; }
-        #erotic-banner { display: none; position: fixed; bottom: -100px; left: 0; width: 100%; height: 60px; background: #ff00ff; color: #fff; z-index: 500; font-weight: bold; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: bottom 0.5s; }
-        #popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; padding: 30px; border: 5px solid #ff00ff; z-index: 1000; text-align: center; font-weight: bold; }
+        #start-btn { padding: 25px; border: 4px solid #0f0; background: none; color: #0f0; font-size: 1.5rem; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px #0f0; }
+        header { padding: 10px; border-bottom: 2px solid #0f0; background: rgba(0, 20, 0, 0.9); text-align: center; }
+        h1 { font-size: 1.2rem; margin: 0; letter-spacing: 2px; }
+        .container { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .panel { border: 1px solid #0f0; padding: 10px; background: rgba(0, 10, 0, 0.85); box-shadow: inset 0 0 8px #0f0; font-size: 0.85rem; line-height: 1.4; }
+        .btn-summon { background: #0f0; color: #000; border: none; padding: 15px; width: 100%; font-size: 1.3rem; font-weight: bold; border-radius: 5px; }
         #beast { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; background: #000; }
         #beast img { width: 100%; height: 100%; object-fit: contain; }
-        .hissa-text { position: absolute; font-weight: bold; pointer-events: none; animation: float 1.5s forwards; z-index: 100; font-size: 1.8rem; }
-        @keyframes float { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-200px) scale(2); } }
-        .info-label { color: #aaa; font-size: 0.7rem; display: block; }
+        #popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; padding: 20px; border: 4px solid #ff00ff; z-index: 1000; text-align: center; width: 80%; box-sizing: border-box; }
+        #popup button { padding: 10px 20px; margin: 5px; font-weight: bold; }
+        #erotic-banner { display: none; position: fixed; bottom: -80px; left: 0; width: 100%; height: 50px; background: #ff00ff; color: #fff; z-index: 500; font-weight: bold; align-items: center; justify-content: center; text-decoration: none; transition: bottom 0.4s; font-size: 0.9rem; }
+        .hissa-text { position: absolute; font-weight: bold; pointer-events: none; animation: float 1s forwards; z-index: 100; font-size: 1.5rem; text-shadow: 2px 2px #000; }
+        @keyframes float { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: translateY(-150px) scale(2); } }
+        .label { color: #888; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 2px; }
     </style>
 </head>
 <body>
 
 <div id="start-overlay">
-    <div style="color:#0f0; margin-bottom: 20px;">SECURITY CHECK REQUIRED...</div>
     <button id="start-btn" onclick="startSystem()">ENTER SYSTEM</button>
 </div>
 
-<div class="scanline"></div>
 <canvas id="matrix"></canvas>
 
 <div id="beast" onclick="this.style.display='none'">
-    <img src="https://files.catbox.moe/f0d4m5.jpeg" style="width:100%; height:100%;">
+    <img src="https://files.catbox.moe/f0d4m5.jpeg">
 </div>
 
 <a href="https://m.youtube.com/@Herr0404jp" target="_blank" id="erotic-banner">貴方と今宵、愛し合いたい…♡</a>
 
 <div id="popup">
-    <p>バナナはおやつに入りますか？</p>
-    <button onclick="bananaChoice('yes_jp')">はい</button>
-    <button onclick="bananaChoice('yes_en')">Yes</button>
+    <p style="font-weight:bold;">バナナはおやつに入りますか？</p>
+    <button onclick="bananaChoice('no')">はい</button>
+    <button onclick="bananaChoice('yes')">Yes</button>
 </div>
 
-<header>
-    <h1>HISSA WATCHER [COMPLETE]</h1>
-</header>
+<header><h1>HISSA WATCHER [COMPLETE]</h1></header>
 
-<div class="container" id="main-area">
+<div class="container">
     <div class="panel">
-        <div><span class="info-label">YOUR IP:</span> <span id="user-ip">...CHECKING</span></div>
-        <div><span class="info-label">ACCESS TIME:</span> <span id="current-time">00:00:00</span></div>
+        <div class="label">User Info</div>
+        <div>IP: <span id="user-ip">124.XXX.XXX.XXX</span></div>
+        <div>TIME: <span id="current-time">00:00:00</span></div>
     </div>
     
-    <div class="panel" style="color: #ff00ff; border-color: #ff00ff; box-shadow: inset 0 0 10px #ff00ff;">
-        <div><span class="info-label" style="color:#ff00ff;">HISSA LOC:</span> <span id="hissa-pos">SEARCHING...</span></div>
-        <div><span class="info-label" style="color:#ff00ff;">STATUS:</span> <span id="forecast">WAITING</span></div>
+    <div class="panel" style="border-color:#ff00ff; color:#ff00ff; box-shadow: inset 0 0 8px #ff00ff;">
+        <div class="label" style="color:#ff00ff;">Hissa Tracking</div>
+        <div>LOC: <span id="hissa-pos">SEARCHING...</span></div>
+        <div>STATUS: <span id="forecast">WAITING</span></div>
     </div>
 
     <button class="btn-summon" onclick="summonHissa()">HISSA 召喚</button>
 
-    <div class="panel" style="margin-top:20px;">
-        <div class="info-label">VOICE LOG:</div>
-        <div id="quote" style="font-size: 1.2rem; color: #0ff; min-height: 1.5em;"></div>
+    <div class="panel">
+        <div class="label">Voice Log</div>
+        <div id="quote" style="color:#0ff; font-size:1.1rem; height:1.5em;">Initializing...</div>
     </div>
 </div>
 
@@ -75,7 +73,7 @@
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
     const drops = Array(Math.floor(canvas.width/14)).fill(1);
     function draw() {
-        ctx.fillStyle = "rgba(0,0,0,0.05)"; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = "rgba(0,0,0,0.1)"; ctx.fillRect(0,0,canvas.width,canvas.height);
         ctx.fillStyle = "#0f0"; ctx.font = "14px monospace";
         drops.forEach((y,i)=>{
             ctx.fillText("01HISSA"[Math.floor(Math.random()*7)], i*14, y*14);
@@ -89,59 +87,51 @@
         document.getElementById('start-overlay').style.display = 'none';
         audioCtx = new(window.AudioContext||window.webkitAudioContext)();
         document.getElementById('user-ip').innerText = `124.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`;
-        squeak();
+        playTone(440, 0.1);
     }
 
-    // 時計
-    setInterval(()=>{
-        document.getElementById('current-time').innerText = new Date().toLocaleTimeString();
-    }, 1000);
-
-    // 所在・状態の更新
-    const spots = ["北緯35.6度 東経139.7度", "マリアナ海溝底", "ブラジル奥地", "Hissaの布団の裏側", "時空の狭間", "給食室の裏", "屋上裏"];
-    setInterval(()=>{
-        document.getElementById('hissa-pos').innerText = spots[Math.floor(Math.random()*spots.length)];
-        document.getElementById('forecast').innerText = ["ガッタイ中", "ワン・ツー待機", "ウフン待ち", "監視中", "臨界突破"][Math.floor(Math.random()*5)];
-    }, 3000);
-
-    function squeak() {
+    function playTone(freq, dur) {
         if(!audioCtx) return;
         const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-        o.type = 'triangle'; o.frequency.setValueAtTime(300+Math.random()*200, audioCtx.currentTime);
-        g.gain.setValueAtTime(0.05, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-        o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + 0.3);
+        o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+        o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + dur);
     }
 
-    // 召喚
+    setInterval(()=> { document.getElementById('current-time').innerText = new Date().toLocaleTimeString(); }, 1000);
+
+    const spots = ["北緯35.6度 東経139.7度", "マリアナ海溝底", "ブラジル奥地", "Hissaの布団の裏側", "給食室の裏"];
+    setInterval(()=>{
+        document.getElementById('hissa-pos').innerText = spots[Math.floor(Math.random()*spots.length)];
+        document.getElementById('forecast').innerText = ["ガッタイ中", "ワン・ツー待機", "ウフン待ち", "監視中"][Math.floor(Math.random()*4)];
+    }, 3000);
+
     function summonHissa() {
+        const v = ["どう、わぁたぁしぃ〜♡", "こんなものなの〜♡", "ハイパーボぃぃぃぃスッ！！！", "マッチッポンプッ", "ガッタイ！！", "アンタなぁ〜", "ワン・ツー"];
+        const txt = v[Math.floor(Math.random()*v.length)];
         const h = document.createElement('div'); h.className = 'hissa-text';
-        const v = ["どう、わぁたぁしぃ〜♡", "こんなものなの〜♡", "嫌いよ、度胸無し💢", "ハイパーボぃぃぃぃスッ！！！", "スー↴パー↴ボイース↗", "歓迎よ〜", "マッチッポンプッ", "ガッタイ！！", "アンタなぁ〜", "ワン・ツー", "ウフンっ♡ｿｳﾖﾝｯ♡"];
-        h.innerText = v[Math.floor(Math.random()*v.length)];
-        h.style.color = h.innerText.includes('♡') ? "#ff00ff" : "#0f0";
-        h.style.left = Math.random()*50+10+'%'; h.style.top='40%';
+        h.innerText = txt; h.style.left = '20%'; h.style.top = '40%';
+        h.style.color = txt.includes('♡') ? "#ff00ff" : "#0f0";
         document.body.appendChild(h);
-        if(audioCtx) squeak();
-        setTimeout(()=>h.remove(), 1500);
+        playTone(300 + Math.random()*200, 0.2);
+        setTimeout(()=>h.remove(), 1000);
     }
 
-    // ポップアップ管理
     setInterval(()=> { document.getElementById('popup').style.display='block'; }, 8000);
     function bananaChoice(c){
         document.getElementById('popup').style.display='none';
-        if(c==='yes_en') { 
+        if(c==='yes') { 
             document.getElementById('beast').style.display='block'; 
             setTimeout(()=>document.getElementById('beast').style.display='none', 2500); 
-        }
+        } else { playTone(200, 0.5); }
     }
 
-    // 広告バナー
     setInterval(()=> {
         const b = document.getElementById('erotic-banner'); b.style.display='flex'; b.style.bottom='0px';
-        setTimeout(()=> b.style.bottom='-100px', 2500);
+        setTimeout(()=> b.style.bottom='-80px', 2500);
     }, 5000);
 
-    // 音声ログの更新
-    const quotes = ["どう、わぁたぁしぃ〜♡", "ハイパーボぃぃぃぃスッ！！！", "マッチッポンプッ", "アンタなぁ〜", "歓迎よ〜"];
+    const quotes = ["どう、わぁたぁしぃ〜♡", "ハイパーボぃぃぃぃスッ！！！", "マッチッポンプッ", "アンタなぁ〜"];
     setInterval(()=> { document.getElementById('quote').innerText = quotes[Math.floor(Math.random()*quotes.length)]; }, 4000);
 </script>
 </body>
