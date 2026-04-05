@@ -3,93 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HISSA WATCHER [ULTIMATE-COUNT]</title>
+    <title>HISSA WATCHER [MASTER-EDITION]</title>
     <style>
         body { background-color: #000; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; height: 100vh; }
         #matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; }
-        #start-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        #start-btn { padding: 25px; border: 4px solid #0f0; background: none; color: #0f0; font-size: 1.5rem; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px #0f0; }
+        
+        /* 起動画面 & ローディング */
+        #start-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        #start-btn { padding: 25px 50px; border: 2px solid #0f0; background: none; color: #0f0; font-size: 1.5rem; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 0 15px #0f0; }
+        #start-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        #loader-container { display: none; width: 300px; margin-top: 20px; text-align: center; }
+        #progress-wrapper { width: 100%; height: 10px; border: 1px solid #0f0; position: relative; overflow: hidden; }
+        #progress-bar { width: 0%; height: 100%; background: #0f0; box-shadow: 0 0 10px #0f0; transition: width 0.1s; }
+        #percent-text { color: #0f0; font-size: 1.2rem; margin-top: 10px; font-weight: bold; letter-spacing: 2px; }
+
         header { padding: 10px; border-bottom: 2px solid #0f0; background: rgba(0, 20, 0, 0.9); text-align: center; }
         .container { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
         .panel { border: 1px solid #0f0; padding: 10px; background: rgba(0, 10, 0, 0.85); box-shadow: inset 0 0 8px #0f0; font-size: 0.85rem; }
-        .btn-summon { background: #0f0; color: #000; border: none; padding: 15px; width: 100%; font-size: 1.3rem; font-weight: bold; border-radius: 5px; cursor: pointer; }
-        
-        /* カウンター専用スタイル */
-        .lucky-counter { color: #ff00ff; font-weight: bold; font-size: 1.1rem; text-shadow: 0 0 5px #ff00ff; }
+        .btn-summon { background: #0f0; color: #000; border: none; padding: 15px; width: 100%; font-size: 1.3rem; font-weight: bold; cursor: pointer; }
+        .lucky-counter { color: #ff00ff; font-weight: bold; font-size: 1.1rem; }
 
         /* 救済演出 */
-        #horror-pop { position: fixed; top: -100%; left: 0; width: 100%; height: 100%; background: #000; color: #f00; z-index: 8000; transition: top 3s linear; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; text-shadow: 0 0 20px #f00; text-align: center; }
-        #close-horror { position: absolute; top: 10px; right: 10px; color: #111; font-size: 0.8rem; cursor: pointer; padding: 10px; }
+        #horror-pop { position: fixed; top: -100%; left: 0; width: 100%; height: 100%; background: #000; z-index: 8000; transition: top 3s cubic-bezier(0.9, 0, 0.1, 1); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        #horror-text { color: #f00; font-size: 3rem; font-weight: bold; text-align: center; animation: glitch 0.2s infinite, zoomIn 10s forwards; white-space: nowrap; }
         
-        /* 弾幕 */
-        .danmaku { position: fixed; white-space: nowrap; background: #ff00ff; color: #fff; padding: 5px 15px; font-weight: bold; z-index: 9000; cursor: pointer; font-size: 1.2rem; box-shadow: 0 0 10px #ff00ff; border-radius: 3px; }
-        @keyframes nico { from { left: 100%; } to { left: -150%; } }
+        @keyframes glitch {
+            0% { transform: translate(2px, -2px); text-shadow: 2px 0 #fff, -2px 0 #00f; }
+            50% { transform: translate(-2px, 2px); clip-path: inset(20% 0 40% 0); }
+            100% { transform: translate(0); }
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.5); }
+            to { transform: scale(20); opacity: 0; }
+        }
 
-        #beast { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; background: #000; }
-        #beast img { width: 100%; height: 100%; object-fit: contain; }
+        #close-horror { position: absolute; top: 10px; right: 10px; color: #200; font-size: 0.8rem; cursor: pointer; z-index: 8001; }
+        .danmaku { position: fixed; white-space: nowrap; background: #ff00ff; color: #fff; padding: 5px 15px; font-weight: bold; z-index: 9000; cursor: pointer; border-radius: 3px; }
+        @keyframes nico { from { left: 100%; } to { left: -150%; } }
         #popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; padding: 20px; border: 4px solid #ff00ff; z-index: 1000; text-align: center; width: 85%; }
         #erotic-banner { display: none; position: fixed; bottom: -80px; left: 0; width: 100%; height: 50px; background: #ff00ff; color: #fff; z-index: 500; font-weight: bold; align-items: center; justify-content: center; text-decoration: none; transition: bottom 0.4s; }
-        .hissa-text { position: absolute; font-weight: bold; pointer-events: none; animation: float 1s forwards; z-index: 100; font-size: 1.5rem; text-shadow: 2px 2px #000; }
+        .hissa-text { position: absolute; font-weight: bold; pointer-events: none; animation: float 1s forwards; z-index: 100; font-size: 1.5rem; }
         @keyframes float { 0% { opacity: 1; } 100% { opacity: 0; transform: translateY(-150px) scale(2); } }
-        #yt-player-container { position: absolute; width: 1px; height: 1px; opacity: 0; }
+        #yt-player-container { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body>
 
 <div id="yt-player-container">
+    <div id="player-bgm"></div>
     <div id="player-hai"></div>
     <div id="player-chan"></div>
     <div id="player-summon"></div>
 </div>
 
-<div id="start-overlay"><button id="start-btn" onclick="startSystem()">ENTER SYSTEM</button></div>
+<div id="start-overlay">
+    <button id="start-btn" onclick="runLoading()" disabled>SYSTEM INITIALIZING...</button>
+    <div id="loader-container">
+        <div id="progress-wrapper"><div id="progress-bar"></div></div>
+        <div id="percent-text">0%</div>
+    </div>
+</div>
 
 <div id="horror-pop">
     <div id="close-horror" onclick="goAlt()">×</div>
-    救済をウケる
-</div>
-
-<div id="beast" onclick="this.style.display='none'">
-    <img src="https://files.catbox.moe/f0d4m5.jpeg">
+    <div id="horror-text">救済をウケる<br>死死死死死死</div>
 </div>
 
 <canvas id="matrix"></canvas>
 <a href="https://m.youtube.com/@Herr0404jp" target="_blank" id="erotic-banner">貴方と今宵、愛し合いたい…♡</a>
 
 <div id="popup">
-    <p style="font-weight:bold;">バナナはおやつに入りますか？</p>
+    <p>バナナはおやつに入りますか？</p>
     <button onclick="bananaChoice('no')">はい</button>
     <button onclick="bananaChoice('yes')">Yes</button>
 </div>
 
-<header><h1>HISSA WATCHER</h1></header>
+<header><h1>HISSA WATCHER [ULTIMATE]</h1></header>
 
 <div class="container">
     <div class="panel">
         <div>IP: <span id="user-ip">...</span></div>
         <div class="lucky-counter">おめでた回数：<span id="lucky-count">0</span>回</div>
     </div>
-    
     <div class="panel" style="border-color:#ff00ff; color:#ff00ff;">
         <div>LOC: <span id="hissa-pos">SEARCHING...</span></div>
         <div>STATUS: <span id="forecast">WAITING</span></div>
     </div>
-
     <button class="btn-summon" onclick="summonHissa()">HISSA 召喚</button>
-    <div class="panel"><div id="quote" style="color:#0ff; font-size:1.1rem; height:1.5em;">Initializing...</div></div>
+    <div class="panel"><div id="current-time">00:00:00</div></div>
 </div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-    let playerHai, playerChan, playerSummon;
+    let players = { bgm: null, hai: null, chan: null, summon: null };
+    let readyCount = 0;
+
     function onYouTubeIframeAPIReady() {
-        playerHai = new YT.Player('player-hai', { height: '1', width: '1', videoId: '7jfoXGh77xA' });
-        playerChan = new YT.Player('player-chan', { height: '1', width: '1', videoId: 'Wj7_EJR755o' });
-        playerSummon = new YT.Player('player-summon', { height: '1', width: '1', videoId: '6k6wCRCKLn4' });
+        const checkReady = () => {
+            readyCount++;
+            if (readyCount >= 4) {
+                const btn = document.getElementById('start-btn');
+                btn.innerText = 'ENABLE SYSTEM'; btn.disabled = false;
+            }
+        };
+
+        players.bgm = new YT.Player('player-bgm', {
+            videoId: 'eap7eQOkwTI',
+            playerVars: { 'loop': 1, 'playlist': 'eap7eQOkwTI' },
+            events: { onReady: (e) => { e.target.setVolume(20); checkReady(); }, onStateChange: (e) => { if(e.data === YT.PlayerState.ENDED) e.target.playVideo(); } }
+        });
+        players.hai = new YT.Player('player-hai', { videoId: '7jfoXGh77xA', events: { onReady: checkReady } });
+        players.chan = new YT.Player('player-chan', { videoId: 'Wj7_EJR755o', events: { onReady: checkReady } });
+        players.summon = new YT.Player('player-summon', { videoId: '6k6wCRCKLn4', events: { onReady: checkReady } });
     }
 
-    const canvas = document.getElementById('matrix');
-    const ctx = canvas.getContext('2d');
+    function runLoading() {
+        document.getElementById('start-btn').style.display = 'none';
+        document.getElementById('loader-container').style.display = 'block';
+        let bar = document.getElementById('progress-bar'), text = document.getElementById('percent-text'), width = 0;
+        let id = setInterval(() => {
+            if (width >= 100) { clearInterval(id); text.innerText = "COMPLETE"; setTimeout(startSystem, 800); }
+            else { width += Math.random() * 5; if(width > 100) width = 100; bar.style.width = width + '%'; text.innerText = Math.floor(width) + '%'; }
+        }, 80);
+    }
+
+    function startSystem() {
+        document.getElementById('start-overlay').style.display = 'none';
+        if (players.bgm) players.bgm.playVideo();
+        Object.values(players).forEach(p => { if(p && p !== players.bgm) { p.playVideo(); p.pauseVideo(); } });
+        document.getElementById('user-ip').innerText = `124.${Math.floor(Math.random()*255)}.XXX.XXX`;
+        setTimeout(() => { document.getElementById('horror-pop').style.top = '0'; setTimeout(startDanmaku, 6000); }, 60000);
+    }
+
+    function summonHissa() {
+        if (players.summon) { players.summon.seekTo(0); players.summon.playVideo(); }
+        if (Math.random() < 0.006) {
+            luckyCount++; localStorage.setItem('hissa_lucky_count', luckyCount);
+            document.getElementById('lucky-count').innerText = luckyCount;
+            document.body.style.backgroundColor = 'red';
+            if (players.chan) { players.chan.seekTo(0); players.chan.playVideo(); }
+            const h = document.createElement('div'); h.className = 'hissa-text';
+            h.innerText = "ウフンっ♡ｿｳﾖﾝｯ♡"; h.style.left = '20%'; h.style.top = '30%'; h.style.color = "#ff00ff";
+            document.body.appendChild(h);
+            setTimeout(() => { document.body.style.backgroundColor = 'black'; h.remove(); }, 1000);
+            return;
+        }
+        const v = ["どう、わぁたぁしぃ〜♡", "ハイパーボぃぃぃぃスッ！！！", "マッチッポンプッ", "アンタなぁ〜"];
+        const txt = v[Math.floor(Math.random()*v.length)];
+        const h = document.createElement('div'); h.className = 'hissa-text';
+        h.innerText = txt; h.style.left = Math.random()*60+10+'%'; h.style.top = '40%';
+        h.style.color = txt.includes('♡') ? "#ff00ff" : "#0f0";
+        document.body.appendChild(h);
+        setTimeout(()=>h.remove(), 1000);
+    }
+
+    function bananaChoice(c){
+        document.getElementById('popup').style.display='none';
+        if(c==='yes') window.open("https://youtu.be/9i53HSOS3U4?si=vw5zfnWA-M3wpjxe", "_blank");
+        else if (players.hai) { players.hai.seekTo(0); players.hai.playVideo(); }
+    }
+
+    const canvas = document.getElementById('matrix'), ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
     const drops = Array(Math.floor(canvas.width/14)).fill(1);
     function draw() {
@@ -101,87 +176,22 @@
         });
     }
     setInterval(draw, 50);
-
-    // カウントの読み込み
     let luckyCount = localStorage.getItem('hissa_lucky_count') || 0;
     document.getElementById('lucky-count').innerText = luckyCount;
-
-    function startSystem() {
-        document.getElementById('start-overlay').style.display = 'none';
-        document.getElementById('user-ip').innerText = `124.${Math.floor(Math.random()*255)}.XXX.XXX`;
-        setTimeout(() => {
-            const horror = document.getElementById('horror-pop');
-            horror.style.top = '0';
-            setTimeout(startDanmaku, 6000); 
-        }, 120000);
-    }
-
     function goAlt() { window.open("https://www.altqw.com/", "_blank"); }
-
     function startDanmaku() {
         setInterval(() => {
-            const b = document.createElement('div');
-            b.className = 'danmaku'; b.innerText = "ぽるのはぶはこちら";
-            b.style.top = Math.random() * 90 + "%";
-            b.style.animation = `nico ${Math.random() * 2 + 2}s linear forwards`;
+            const b = document.createElement('div'); b.className = 'danmaku'; b.innerText = "ぽるのはぶはこちら";
+            b.style.top = Math.random() * 90 + "%"; b.style.animation = `nico ${Math.random() * 2 + 2}s linear forwards`;
             b.onclick = () => { window.location.href = "https://jp.pornhub.com/"; };
-            document.body.appendChild(b);
-            setTimeout(() => b.remove(), 5000);
+            document.body.appendChild(b); setTimeout(() => b.remove(), 5000);
         }, 250);
     }
-
-    function summonHissa() {
-        if(playerSummon) { playerSummon.seekTo(0); playerSummon.playVideo(); }
-
-        // 0.6%の確率
-        if (Math.random() < 0.006) {
-            // カウントアップ処理
-            luckyCount++;
-            localStorage.setItem('hissa_lucky_count', luckyCount);
-            document.getElementById('lucky-count').innerText = luckyCount;
-
-            document.body.style.backgroundColor = 'red';
-            if(playerChan) { playerChan.seekTo(0); playerChan.playVideo(); }
-            
-            const h = document.createElement('div'); h.className = 'hissa-text';
-            h.innerText = "ウフンっ♡ｿｳﾖﾝｯ♡";
-            h.style.left = '20%'; h.style.top = '30%'; h.style.color = "#ff00ff"; h.style.fontSize = "2rem";
-            document.body.appendChild(h);
-
-            setTimeout(() => {
-                document.body.style.backgroundColor = 'black';
-                h.remove();
-            }, 1000);
-            return;
-        }
-
-        const v = ["どう、わぁたぁしぃ〜♡", "ハイパーボぃぃぃぃスッ！！！", "マッチッポンプッ", "アンタなぁ〜"];
-        const txt = v[Math.floor(Math.random()*v.length)];
-        const h = document.createElement('div'); h.className = 'hissa-text';
-        h.innerText = txt; h.style.left = Math.random()*60+10+'%'; h.style.top = '40%';
-        h.style.color = txt.includes('♡') ? "#ff00ff" : "#0f0";
-        document.body.appendChild(h);
-        setTimeout(()=>h.remove(), 1000);
-    }
-
     setInterval(()=> { document.getElementById('popup').style.display='block'; }, 10000);
-    function bananaChoice(c){
-        document.getElementById('popup').style.display='none';
-        if(c==='yes') { 
-            document.getElementById('beast').style.display='block';
-            setTimeout(()=> {
-                document.getElementById('beast').style.display='none';
-                window.open("https://youtu.be/9i53HSOS3U4?si=vw5zfnWA-M3wpjxe", "_blank");
-            }, 1000);
-        }
-        else { if(playerHai) { playerHai.seekTo(0); playerHai.playVideo(); } }
-    }
-
     setInterval(()=> {
         const b = document.getElementById('erotic-banner'); b.style.display='flex'; b.style.bottom='0px';
         setTimeout(()=> b.style.bottom='-80px', 2500);
     }, 6000);
-
     setInterval(()=> { document.getElementById('current-time').innerText = new Date().toLocaleTimeString(); }, 1000);
     const spots = ["北緯35.6度", "マリアナ海溝", "ブラジル奥地", "Hissaの布団裏"];
     setInterval(()=>{
