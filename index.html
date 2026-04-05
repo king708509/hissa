@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HISSA WATCHER [PERFECT-EDITION]</title>
+    <title>HISSA WATCHER [ULTIMATE-COUNT]</title>
     <style>
         body { background-color: #000; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; height: 100vh; }
         #matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; }
@@ -14,14 +14,19 @@
         .panel { border: 1px solid #0f0; padding: 10px; background: rgba(0, 10, 0, 0.85); box-shadow: inset 0 0 8px #0f0; font-size: 0.85rem; }
         .btn-summon { background: #0f0; color: #000; border: none; padding: 15px; width: 100%; font-size: 1.3rem; font-weight: bold; border-radius: 5px; cursor: pointer; }
         
-        /* 救済ポップアップ（3秒かけて降りる） */
+        /* カウンター専用スタイル */
+        .lucky-counter { color: #ff00ff; font-weight: bold; font-size: 1.1rem; text-shadow: 0 0 5px #ff00ff; }
+
+        /* 救済演出 */
         #horror-pop { position: fixed; top: -100%; left: 0; width: 100%; height: 100%; background: #000; color: #f00; z-index: 8000; transition: top 3s linear; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; text-shadow: 0 0 20px #f00; text-align: center; }
         #close-horror { position: absolute; top: 10px; right: 10px; color: #111; font-size: 0.8rem; cursor: pointer; padding: 10px; }
         
-        /* 弾幕バナー */
+        /* 弾幕 */
         .danmaku { position: fixed; white-space: nowrap; background: #ff00ff; color: #fff; padding: 5px 15px; font-weight: bold; z-index: 9000; cursor: pointer; font-size: 1.2rem; box-shadow: 0 0 10px #ff00ff; border-radius: 3px; }
         @keyframes nico { from { left: 100%; } to { left: -150%; } }
 
+        #beast { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; background: #000; }
+        #beast img { width: 100%; height: 100%; object-fit: contain; }
         #popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; padding: 20px; border: 4px solid #ff00ff; z-index: 1000; text-align: center; width: 85%; }
         #erotic-banner { display: none; position: fixed; bottom: -80px; left: 0; width: 100%; height: 50px; background: #ff00ff; color: #fff; z-index: 500; font-weight: bold; align-items: center; justify-content: center; text-decoration: none; transition: bottom 0.4s; }
         .hissa-text { position: absolute; font-weight: bold; pointer-events: none; animation: float 1s forwards; z-index: 100; font-size: 1.5rem; text-shadow: 2px 2px #000; }
@@ -44,8 +49,11 @@
     救済をウケる
 </div>
 
-<canvas id="matrix"></canvas>
+<div id="beast" onclick="this.style.display='none'">
+    <img src="https://files.catbox.moe/f0d4m5.jpeg">
+</div>
 
+<canvas id="matrix"></canvas>
 <a href="https://m.youtube.com/@Herr0404jp" target="_blank" id="erotic-banner">貴方と今宵、愛し合いたい…♡</a>
 
 <div id="popup">
@@ -54,17 +62,19 @@
     <button onclick="bananaChoice('yes')">Yes</button>
 </div>
 
-<header><h1>HISSA WATCHER [ULTIMATE]</h1></header>
+<header><h1>HISSA WATCHER</h1></header>
 
 <div class="container">
     <div class="panel">
         <div>IP: <span id="user-ip">...</span></div>
-        <div>TIME: <span id="current-time">00:00:00</span></div>
+        <div class="lucky-counter">おめでた回数：<span id="lucky-count">0</span>回</div>
     </div>
+    
     <div class="panel" style="border-color:#ff00ff; color:#ff00ff;">
         <div>LOC: <span id="hissa-pos">SEARCHING...</span></div>
         <div>STATUS: <span id="forecast">WAITING</span></div>
     </div>
+
     <button class="btn-summon" onclick="summonHissa()">HISSA 召喚</button>
     <div class="panel"><div id="quote" style="color:#0ff; font-size:1.1rem; height:1.5em;">Initializing...</div></div>
 </div>
@@ -92,10 +102,13 @@
     }
     setInterval(draw, 50);
 
+    // カウントの読み込み
+    let luckyCount = localStorage.getItem('hissa_lucky_count') || 0;
+    document.getElementById('lucky-count').innerText = luckyCount;
+
     function startSystem() {
         document.getElementById('start-overlay').style.display = 'none';
         document.getElementById('user-ip').innerText = `124.${Math.floor(Math.random()*255)}.XXX.XXX`;
-        // 2分後に救済開始
         setTimeout(() => {
             const horror = document.getElementById('horror-pop');
             horror.style.top = '0';
@@ -118,24 +131,63 @@
     }
 
     function summonHissa() {
-        // 通常召喚音（ボヨヨーン）を再生
         if(playerSummon) { playerSummon.seekTo(0); playerSummon.playVideo(); }
 
-        // 0.6%の確率演出
+        // 0.6%の確率
         if (Math.random() < 0.006) {
+            // カウントアップ処理
+            luckyCount++;
+            localStorage.setItem('hissa_lucky_count', luckyCount);
+            document.getElementById('lucky-count').innerText = luckyCount;
+
             document.body.style.backgroundColor = 'red';
             if(playerChan) { playerChan.seekTo(0); playerChan.playVideo(); }
-            setTimeout(() => document.body.style.backgroundColor = 'black', 500);
+            
+            const h = document.createElement('div'); h.className = 'hissa-text';
+            h.innerText = "ウフンっ♡ｿｳﾖﾝｯ♡";
+            h.style.left = '20%'; h.style.top = '30%'; h.style.color = "#ff00ff"; h.style.fontSize = "2rem";
+            document.body.appendChild(h);
+
+            setTimeout(() => {
+                document.body.style.backgroundColor = 'black';
+                h.remove();
+            }, 1000);
             return;
         }
 
         const v = ["どう、わぁたぁしぃ〜♡", "ハイパーボぃぃぃぃスッ！！！", "マッチッポンプッ", "アンタなぁ〜"];
         const txt = v[Math.floor(Math.random()*v.length)];
         const h = document.createElement('div'); h.className = 'hissa-text';
-        h.innerText = txt; h.style.left = '30%'; h.style.top = '40%';
+        h.innerText = txt; h.style.left = Math.random()*60+10+'%'; h.style.top = '40%';
         h.style.color = txt.includes('♡') ? "#ff00ff" : "#0f0";
         document.body.appendChild(h);
         setTimeout(()=>h.remove(), 1000);
     }
 
-    setInterval(()=> { document.getElementById('popup').
+    setInterval(()=> { document.getElementById('popup').style.display='block'; }, 10000);
+    function bananaChoice(c){
+        document.getElementById('popup').style.display='none';
+        if(c==='yes') { 
+            document.getElementById('beast').style.display='block';
+            setTimeout(()=> {
+                document.getElementById('beast').style.display='none';
+                window.open("https://youtu.be/9i53HSOS3U4?si=vw5zfnWA-M3wpjxe", "_blank");
+            }, 1000);
+        }
+        else { if(playerHai) { playerHai.seekTo(0); playerHai.playVideo(); } }
+    }
+
+    setInterval(()=> {
+        const b = document.getElementById('erotic-banner'); b.style.display='flex'; b.style.bottom='0px';
+        setTimeout(()=> b.style.bottom='-80px', 2500);
+    }, 6000);
+
+    setInterval(()=> { document.getElementById('current-time').innerText = new Date().toLocaleTimeString(); }, 1000);
+    const spots = ["北緯35.6度", "マリアナ海溝", "ブラジル奥地", "Hissaの布団裏"];
+    setInterval(()=>{
+        document.getElementById('hissa-pos').innerText = spots[Math.floor(Math.random()*spots.length)];
+        document.getElementById('forecast').innerText = ["ガッタイ中", "ワン・ツー待機", "ウフン待ち"][Math.floor(Math.random()*3)];
+    }, 3000);
+</script>
+</body>
+</html>
