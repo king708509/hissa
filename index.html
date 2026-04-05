@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FATAL_SYSTEM_ERROR_1919810</title>
+    <title>INFECTED_SYSTEM_Ver222</title>
     <style>
         /* [CORE_ENGINE_STYLE] */
         body { 
@@ -11,7 +11,16 @@
             font-family: 'Consolas', 'Courier New', monospace; 
             margin: 0; overflow: hidden; height: 100dvh; 
             user-select: none;
+            transition: filter 0.1s; /* 色彩反転用 */
         }
+        /* 強制操作不能レイヤー */
+        #freeze-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            z-index: 20000; display: none; cursor: wait;
+        }
+        /* 色彩反転クラス */
+        .system-invert { filter: invert(1) hue-rotate(180deg); }
+
         #matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; pointer-events: none; }
         
         /* [GHOST_AUDIO_UNIT] */
@@ -32,9 +41,16 @@
         .main-dashboard { padding: 20px; display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto; position: relative; z-index: 500; }
         
         /* [OMEDETA_MODULE] */
-        .counter-panel { border: 3px double #f0f; background: rgba(30, 0, 30, 0.85); padding: 15px; text-align: center; box-shadow: 0 0 20px rgba(255,0,255,0.3); }
+        .counter-panel { border: 3px double #f0f; background: rgba(30, 0, 30, 0.85); padding: 15px; text-align: center; box-shadow: 0 0 20px rgba(255,0,255,0.3); position: relative; }
         .counter-label { color: #f0f; font-size: 0.9rem; font-weight: bold; display: block; margin-bottom: 5px; }
         .counter-value { color: #fff; font-size: 3rem; font-weight: 900; text-shadow: 0 0 15px #f0f; }
+        
+        /* リフレッシュボタン */
+        #count-reset-btn { 
+            position: absolute; top: 10px; right: 10px; 
+            background: #f00; color: #fff; border: none; font-size: 0.6rem; 
+            padding: 5px 8px; cursor: pointer; font-weight: bold; box-shadow: 0 0 10px #f00;
+        }
 
         .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .status-node { border: 1px solid #0f0; background: rgba(0, 30, 0, 0.8); padding: 10px; font-size: 0.75rem; box-shadow: inset 0 0 8px #0f0; }
@@ -56,7 +72,13 @@
         #kyusai-text { color: #fff; font-size: 3.5rem; font-weight: bold; text-align: center; }
         .glitch-fx { animation: glitch-anim 0.1s infinite; }
         @keyframes glitch-anim { 0% { transform: translate(2px, -2px); text-shadow: -3px 0 #f0f; } 50% { transform: translate(-2px, 2px); text-shadow: 3px 0 #0ff; } 100% { transform: translate(0); } }
-        #trap-close-btn { position: absolute; top: 10px; right: 10px; color: #1a1a1a; font-size: 1rem; padding: 20px; z-index: 9010; }
+        
+        #fake-skip-btn { 
+            position: absolute; bottom: 30px; right: 30px; 
+            padding: 10px 25px; background: rgba(255,255,255,0.1); color: #fff; 
+            border: 1px solid #fff; font-size: 1rem; cursor: pointer; 
+            display: none; z-index: 9020;
+        }
 
         /* [DANMAKU] */
         .danmaku-msg { position: fixed; white-space: nowrap; color: #fff; font-size: 2.2rem; font-weight: 900; z-index: 9500; cursor: pointer; text-shadow: 3px 3px 0 #000; }
@@ -72,9 +94,9 @@
         @keyframes flash-bg { 0% { background: #000; } 50% { background: #600; } 100% { background: #000; } }
     </style>
 </head>
-<body>
+<body id="main-body">
 
-<div id="hissa-video-container">
+<div id="freeze-overlay"></div> <div id="hissa-video-container">
     <div id="yt-bgm"></div><div id="yt-hai"></div><div id="yt-chan"></div><div id="yt-summon"></div>
 </div>
 
@@ -87,8 +109,8 @@
 </div>
 
 <div id="kyusai-overlay">
-    <div id="kyusai-text">救済をウケる<br>死死死死死死</div>
-    <div id="trap-close-btn">×</div>
+    <div id="kyusai-text">救済をウケる</div>
+    <div id="fake-skip-btn">広告をスキップ ≫</div>
 </div>
 
 <canvas id="matrix-bg"></canvas>
@@ -104,6 +126,7 @@
 
 <div class="main-dashboard">
     <div class="counter-panel">
+        <button id="count-reset-btn">RESET</button>
         <span class="counter-label">TOTAL_OMEDETA_COUNT</span>
         <span class="counter-value" id="omedeta-display">0</span>
     </div>
@@ -124,7 +147,7 @@
     let readyCount = 0;
     const PH_LINK = "https://jp.pornhub.com/";
     const HERR_LINK = "https://m.youtube.com/@Herr0404jp";
-    const ALT_LINK = "https://www.altqw.com/";
+    const FANZA_LINK = "https://www.dmm.co.jp/top/-/fanza/";
 
     // [AUDIO_INITIALIZATION]
     function onYouTubeIframeAPIReady() {
@@ -146,6 +169,9 @@
 
     // [BOOT_SEQUENCE]
     document.getElementById('boot-init-btn').onclick = function() {
+        // ここでBGMを先行再生してブロック解除
+        if(players.bgm) players.bgm.playVideo();
+
         this.style.display = 'none';
         document.getElementById('boot-console-wrap').style.display = 'block';
         const log = document.getElementById('boot-log'), bar = document.getElementById('boot-progress-bar');
@@ -166,20 +192,23 @@
 
     function startCore() {
         document.getElementById('boot-overlay').style.display = 'none';
-        players.bgm.playVideo(); players.bgm.setLoop(true);
+        if(players.bgm) { players.bgm.playVideo(); players.bgm.setLoop(true); }
         document.getElementById('omedeta-display').innerText = localStorage.getItem('hissa_lucky_count') || 0;
         document.getElementById('sys-ip').innerText = `124.${Math.floor(Math.random()*255)}.8.10`;
         
-        // 1分後の「救済演出」
         setTimeout(() => {
             const ov = document.getElementById('kyusai-overlay');
             ov.style.top = '0';
             document.getElementById('kyusai-text').classList.add('glitch-fx');
-            ov.onclick = (e) => { if(e.target.id !== 'trap-close-btn') window.location.href = PH_LINK; };
+            ov.onclick = (e) => { if(e.target.id !== 'fake-skip-btn') window.location.href = PH_LINK; };
+            setTimeout(() => {
+                const skipBtn = document.getElementById('fake-skip-btn');
+                skipBtn.style.display = 'block';
+                skipBtn.onclick = (e) => { e.stopPropagation(); window.location.href = FANZA_LINK; };
+            }, 5000);
             startDanmaku();
         }, 60000);
 
-        // 各種インターバル
         setInterval(() => { document.getElementById('sys-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
         setInterval(() => { document.getElementById('banana-popup').style.display = 'block'; }, 6000);
         setInterval(() => {
@@ -191,23 +220,45 @@
 
     // [SUMMON_LOGIC]
     document.getElementById('summon-trigger').onclick = () => {
-        // 連打対応: seekTo(0)で即座に最初から再生
         players.summon.seekTo(0); players.summon.playVideo();
         
-        // 0.6% あたり演出
+        // 0.6% あたり演出（色彩反転＆フリーズ追加）
         if (Math.random() < 0.006) {
             let c = parseInt(localStorage.getItem('hissa_lucky_count') || 0) + 1;
             localStorage.setItem('hissa_lucky_count', c);
             document.getElementById('omedeta-display').innerText = c;
+            
+            // 演出開始
             document.body.classList.add('alert-flash');
             players.chan.seekTo(0); players.chan.playVideo();
             popMsg("ウフンっ♡ｿｳﾖﾝｯ♡", "#f0f");
-            setTimeout(() => document.body.classList.remove('alert-flash'), 1000);
+
+            // 1秒後に色彩反転＆操作不能フェーズへ（余韻）
+            setTimeout(() => {
+                document.body.classList.remove('alert-flash');
+                document.getElementById('main-body').classList.add('system-invert');
+                document.getElementById('freeze-overlay').style.display = 'block';
+                
+                // 2秒間の絶望タイム後に解除
+                setTimeout(() => {
+                    document.getElementById('main-body').classList.remove('system-invert');
+                    document.getElementById('freeze-overlay').style.display = 'none';
+                }, 2000);
+
+            }, 1000);
             return;
         }
 
         const s = ["どう、わぁたぁしぃ〜♡", "ハイパーボぃぃぃぃスッ！！！", "マッチッポンプッ", "アンタなぁ〜", "救済が必要ですな", "こんなものなの〜♡", "嫌いよ、度胸無し💢", "スー↴パー↴ボイース↗", "歓迎よ〜", "ガッタイ！！"];
         popMsg(s[Math.floor(Math.random()*s.length)]);
+    };
+
+    // [RESET_LOGIC]
+    document.getElementById('count-reset-btn').onclick = () => {
+        if(confirm("COUNTをリセットしますか？")) {
+            localStorage.setItem('hissa_lucky_count', 0);
+            document.getElementById('omedeta-display').innerText = 0;
+        }
     };
 
     function popMsg(t, c) {
@@ -226,13 +277,10 @@
         }, 400);
     }
 
-    // [EVENT_HANDLERS]
-    document.getElementById('trap-close-btn').onclick = (e) => { e.stopPropagation(); window.location.href = ALT_LINK; };
     document.getElementById('koyoi-banner').onclick = () => window.location.href = HERR_LINK;
     document.getElementById('ban-btn-hai').onclick = () => { document.getElementById('banana-popup').style.display='none'; players.hai.seekTo(0); players.hai.playVideo(); };
     document.getElementById('ban-btn-yes').onclick = () => window.location.href = "https://youtu.be/9i53HSOS3U4";
 
-    // [MATRIX_RENDER]
     const cv = document.getElementById('matrix-bg'), cx = cv.getContext('2d');
     cv.width = window.innerWidth; cv.height = window.innerHeight;
     const cols = Array(Math.floor(cv.width/15)).fill(1);
