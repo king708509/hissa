@@ -3,38 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HISSA WATCHER [ULTIMATE]</title>
+    <title>HISSA WATCHER [ULTIMATE-PRO]</title>
     <style>
         body { background-color: #000; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; height: 100vh; }
         #matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; }
         #start-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; }
         #start-btn { padding: 25px; border: 4px solid #0f0; background: none; color: #0f0; font-size: 1.5rem; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px #0f0; }
         header { padding: 10px; border-bottom: 2px solid #0f0; background: rgba(0, 20, 0, 0.9); text-align: center; }
-        h1 { font-size: 1.2rem; margin: 0; letter-spacing: 2px; }
         .container { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .panel { border: 1px solid #0f0; padding: 10px; background: rgba(0, 10, 0, 0.85); box-shadow: inset 0 0 8px #0f0; font-size: 0.85rem; line-height: 1.4; }
-        .btn-summon { background: #0f0; color: #000; border: none; padding: 15px; width: 100%; font-size: 1.3rem; font-weight: bold; border-radius: 5px; }
-        #beast { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; background: #000; }
-        #beast img { width: 100%; height: 100%; object-fit: contain; }
-        #popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; padding: 20px; border: 4px solid #ff00ff; z-index: 1000; text-align: center; width: 80%; box-sizing: border-box; }
-        #popup button { padding: 10px 20px; margin: 5px; font-weight: bold; }
-        #erotic-banner { display: none; position: fixed; bottom: -80px; left: 0; width: 100%; height: 50px; background: #ff00ff; color: #fff; z-index: 500; font-weight: bold; align-items: center; justify-content: center; text-decoration: none; transition: bottom 0.4s; font-size: 0.9rem; }
+        .panel { border: 1px solid #0f0; padding: 10px; background: rgba(0, 10, 0, 0.85); box-shadow: inset 0 0 8px #0f0; font-size: 0.85rem; }
+        .btn-summon { background: #0f0; color: #000; border: none; padding: 15px; width: 100%; font-size: 1.3rem; font-weight: bold; border-radius: 5px; cursor: pointer; }
+        #popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; padding: 20px; border: 4px solid #ff00ff; z-index: 1000; text-align: center; width: 85%; }
+        #popup button { padding: 10px 20px; margin: 5px; font-weight: bold; cursor: pointer; }
+        #erotic-banner { display: none; position: fixed; bottom: -80px; left: 0; width: 100%; height: 50px; background: #ff00ff; color: #fff; z-index: 500; font-weight: bold; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: bottom 0.4s; }
         .hissa-text { position: absolute; font-weight: bold; pointer-events: none; animation: float 1s forwards; z-index: 100; font-size: 1.5rem; text-shadow: 2px 2px #000; }
-        @keyframes float { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: translateY(-150px) scale(2); } }
-        .label { color: #888; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 2px; }
+        @keyframes float { 0% { opacity: 1; } 100% { opacity: 0; transform: translateY(-150px) scale(2); } }
+        #yt-player-container { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body>
 
+<div id="yt-player-container"><div id="player"></div></div>
+
 <div id="start-overlay">
+    <div style="color:#0f0; margin-bottom:10px; font-size:0.8rem;">SYSTEM ENCRYPTION: ACTIVE</div>
     <button id="start-btn" onclick="startSystem()">ENTER SYSTEM</button>
 </div>
 
 <canvas id="matrix"></canvas>
-
-<div id="beast" onclick="this.style.display='none'">
-    <img src="https://files.catbox.moe/f0d4m5.jpeg">
-</div>
 
 <a href="https://m.youtube.com/@Herr0404jp" target="_blank" id="erotic-banner">貴方と今宵、愛し合いたい…♡</a>
 
@@ -44,30 +40,32 @@
     <button onclick="bananaChoice('yes')">Yes</button>
 </div>
 
-<header><h1>HISSA WATCHER [COMPLETE]</h1></header>
+<header><h1>HISSA WATCHER [ULTIMATE]</h1></header>
 
 <div class="container">
     <div class="panel">
-        <div class="label">User Info</div>
-        <div>IP: <span id="user-ip">124.XXX.XXX.XXX</span></div>
+        <div>IP: <span id="user-ip">...</span></div>
         <div>TIME: <span id="current-time">00:00:00</span></div>
     </div>
-    
-    <div class="panel" style="border-color:#ff00ff; color:#ff00ff; box-shadow: inset 0 0 8px #ff00ff;">
-        <div class="label" style="color:#ff00ff;">Hissa Tracking</div>
+    <div class="panel" style="border-color:#ff00ff; color:#ff00ff;">
         <div>LOC: <span id="hissa-pos">SEARCHING...</span></div>
         <div>STATUS: <span id="forecast">WAITING</span></div>
     </div>
-
     <button class="btn-summon" onclick="summonHissa()">HISSA 召喚</button>
-
     <div class="panel">
-        <div class="label">Voice Log</div>
         <div id="quote" style="color:#0ff; font-size:1.1rem; height:1.5em;">Initializing...</div>
     </div>
 </div>
 
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
+    let player;
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+            height: '1', width: '1', videoId: '7jfoXGh77xA'
+        });
+    }
+
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
@@ -82,57 +80,72 @@
     }
     setInterval(draw, 50);
 
+    // Xの音声（冒頭3秒）の代替ビープ音とエフェクト（ブラウザ制限回避のため）
+    function playRareSound() {
+        if(!audioCtx) return;
+        const master = audioCtx.createGain();
+        master.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        master.connect(audioCtx.destination);
+
+        for(let i=0; i<5; i++) {
+            const o = audioCtx.createOscillator();
+            o.type = 'sawtooth';
+            o.frequency.setValueAtTime(100 + Math.random()*800, audioCtx.currentTime + i*0.1);
+            o.connect(master);
+            o.start(audioCtx.currentTime + i*0.1);
+            o.stop(audioCtx.currentTime + i*0.1 + 0.1);
+        }
+    }
+
     let audioCtx;
     function startSystem() {
         document.getElementById('start-overlay').style.display = 'none';
         audioCtx = new(window.AudioContext||window.webkitAudioContext)();
-        document.getElementById('user-ip').innerText = `124.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`;
-        playTone(440, 0.1);
-    }
-
-    function playTone(freq, dur) {
-        if(!audioCtx) return;
-        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-        o.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-        o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + dur);
+        document.getElementById('user-ip').innerText = `124.${Math.floor(Math.random()*255)}.XXX.XXX`;
     }
 
     setInterval(()=> { document.getElementById('current-time').innerText = new Date().toLocaleTimeString(); }, 1000);
 
-    const spots = ["北緯35.6度 東経139.7度", "マリアナ海溝底", "ブラジル奥地", "Hissaの布団の裏側", "給食室の裏"];
-    setInterval(()=>{
-        document.getElementById('hissa-pos').innerText = spots[Math.floor(Math.random()*spots.length)];
-        document.getElementById('forecast').innerText = ["ガッタイ中", "ワン・ツー待機", "ウフン待ち", "監視中"][Math.floor(Math.random()*4)];
-    }, 3000);
-
     function summonHissa() {
-        const v = ["どう、わぁたぁしぃ〜♡", "こんなものなの〜♡", "ハイパーボぃぃぃぃスッ！！！", "マッチッポンプッ", "ガッタイ！！", "アンタなぁ〜", "ワン・ツー"];
+        // 0.6%の確率で「特殊音声」と画面フラッシュ
+        if (Math.random() < 0.006) {
+            playRareSound();
+            document.body.style.backgroundColor = 'red';
+            setTimeout(()=> document.body.style.backgroundColor = 'black', 100);
+            document.getElementById('quote').innerText = "CRITICAL ERROR: 0.6%";
+            return;
+        }
+
+        const v = ["どう、わぁたぁしぃ〜♡", "ハイパーボぃぃぃぃスッ！！！", "マッチッポンプッ", "アンタなぁ〜"];
         const txt = v[Math.floor(Math.random()*v.length)];
         const h = document.createElement('div'); h.className = 'hissa-text';
-        h.innerText = txt; h.style.left = '20%'; h.style.top = '40%';
+        h.innerText = txt; h.style.left = '30%'; h.style.top = '40%';
         h.style.color = txt.includes('♡') ? "#ff00ff" : "#0f0";
         document.body.appendChild(h);
-        playTone(300 + Math.random()*200, 0.2);
         setTimeout(()=>h.remove(), 1000);
     }
 
-    setInterval(()=> { document.getElementById('popup').style.display='block'; }, 8000);
+    setInterval(()=> { document.getElementById('popup').style.display='block'; }, 10000);
+    
     function bananaChoice(c){
         document.getElementById('popup').style.display='none';
         if(c==='yes') { 
-            document.getElementById('beast').style.display='block'; 
-            setTimeout(()=>document.getElementById('beast').style.display='none', 2500); 
-        } else { playTone(200, 0.5); }
+            window.open("https://youtu.be/9i53HSOS3U4?si=vw5zfnWA-M3wpjxe", "_blank");
+        } else { 
+            if(player) { player.seekTo(0); player.playVideo(); }
+        }
     }
 
     setInterval(()=> {
         const b = document.getElementById('erotic-banner'); b.style.display='flex'; b.style.bottom='0px';
         setTimeout(()=> b.style.bottom='-80px', 2500);
-    }, 5000);
+    }, 6000);
 
-    const quotes = ["どう、わぁたぁしぃ〜♡", "ハイパーボぃぃぃぃスッ！！！", "マッチッポンプッ", "アンタなぁ〜"];
-    setInterval(()=> { document.getElementById('quote').innerText = quotes[Math.floor(Math.random()*quotes.length)]; }, 4000);
+    const spots = ["北緯35.6度", "マリアナ海溝", "ブラジル奥地", "Hissaの布団裏"];
+    setInterval(()=>{
+        document.getElementById('hissa-pos').innerText = spots[Math.floor(Math.random()*spots.length)];
+        document.getElementById('forecast').innerText = ["ガッタイ中", "ワン・ツー待機", "ウフン待ち"][Math.floor(Math.random()*3)];
+    }, 3000);
 </script>
 </body>
 </html>
