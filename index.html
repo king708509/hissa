@@ -3,431 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CRITICAL_SYSTEM_ERROR_1919810_INFECTED</title>
+    <title>FATAL_SYSTEM_ERROR_1919810</title>
     <style>
-        /* -----------------------------------------
-           CORE SYSTEM STYLES (VIRUS EMULATION)
-           ----------------------------------------- */
+        /* [CORE_ENGINE_STYLE] */
         body { 
             background-color: #000; color: #0f0; 
-            font-family: 'Courier New', monospace; 
+            font-family: 'Consolas', 'Courier New', monospace; 
             margin: 0; overflow: hidden; height: 100dvh; 
-            user-select: none; -webkit-touch-callout: none;
+            user-select: none;
         }
-        #matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.25; pointer-events: none; }
+        #matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; pointer-events: none; }
         
-        /* OVERLAY: START & HACKING LOAD */
-        #start-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 9999; 
-            display: flex; align-items: center; justify-content: center; flex-direction: column; 
-        }
-        #start-btn { 
-            padding: 25px 50px; border: 2px solid #0f0; background: none; 
-            color: #0f0; font-size: 1.6rem; font-weight: 900; cursor: pointer; 
-            transition: 0.3s; box-shadow: 0 0 20px #0f0; letter-spacing: 2px;
-        }
-        #start-btn:hover { background: #0f0; color: #000; box-shadow: 0 0 40px #0f0; }
-        #start-btn:disabled { opacity: 0.2; cursor: not-allowed; box-shadow: none; }
+        /* [GHOST_AUDIO_UNIT] */
+        #hissa-video-container { position: absolute; top: -999px; left: -999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
-        #loader-container { display: none; width: 90%; max-width: 500px; color: #0f0; text-align: left; }
-        #hack-log { 
-            height: 180px; overflow-y: hidden; font-size: 0.75rem; 
-            margin-bottom: 15px; line-height: 1.3; border: 1px solid #0f0; 
-            padding: 10px; background: rgba(0, 20, 0, 0.5);
-            box-shadow: inset 0 0 10px #0f0;
-        }
-        #progress-wrapper { width: 100%; height: 20px; border: 1px solid #0f0; position: relative; overflow: hidden; }
-        #progress-bar { width: 0%; height: 100%; background: #0f0; box-shadow: 0 0 20px #0f0; transition: width 0.05s linear; }
-        #percent-text { font-size: 1.5rem; font-weight: 900; margin-top: 10px; text-align: right; }
+        /* [SYSTEM_BOOT_SEQUENCE] */
+        #boot-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        #boot-init-btn { padding: 30px 60px; border: 2px solid #0f0; background: #000; color: #0f0; font-size: 1.6rem; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px #0f0; letter-spacing: 5px; }
+        #boot-init-btn:disabled { opacity: 0.1; box-shadow: none; }
+        #boot-console-wrap { display: none; width: 90%; max-width: 500px; text-align: left; }
+        #boot-log { font-size: 0.7rem; height: 180px; overflow: hidden; margin-bottom: 10px; border-left: 2px solid #0f0; padding-left: 10px; color: #0c0; line-height: 1.3; }
+        .boot-progress-frame { width: 100%; height: 10px; border: 1px solid #0f0; position: relative; }
+        #boot-progress-bar { width: 0%; height: 100%; background: #0f0; box-shadow: 0 0 15px #0f0; }
 
-        /* UI COMPONENTS */
-        header { 
-            padding: 12px; border-bottom: 3px double #0f0; 
-            background: rgba(0, 30, 0, 0.95); text-align: center; 
-            position: relative; z-index: 10; text-shadow: 0 0 5px #0f0;
-        }
-        .container { padding: 20px; display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 10; }
-        .panel { 
-            border: 1px solid #0f0; padding: 12px; 
-            background: rgba(0, 15, 0, 0.9); box-shadow: inset 0 0 10px #0f0; 
-            font-size: 0.9rem; line-height: 1.5;
-        }
-        .btn-summon { 
-            background: #0f0; color: #000; border: none; padding: 20px; 
-            width: 100%; font-size: 1.5rem; font-weight: 900; cursor: pointer; 
-            border-radius: 4px; box-shadow: 0 6px 0 #060; transition: 0.1s;
-        }
-        .btn-summon:active { transform: translateY(4px); box-shadow: 0 2px 0 #060; }
-        .lucky-counter { color: #ff00ff; font-weight: 900; font-size: 1.3rem; text-shadow: 0 0 8px #ff00ff; }
-
-        /* HORROR: BROKEN TV OVERLAY */
-        #horror-pop { 
-            position: fixed; top: -110%; left: 0; width: 100%; height: 100%; 
-            background: #080808; z-index: 8000; display: flex; 
-            align-items: center; justify-content: center; overflow: hidden; 
-            pointer-events: auto; transition: top 1.2s cubic-bezier(0.7, 0, 0.3, 1);
-            cursor: pointer; border-bottom: 8px solid #f00;
-        }
-        #horror-pop::after {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.5) 1px, transparent 1px, transparent 2px);
-            z-index: 8002; pointer-events: none;
-        }
-        #horror-text { color: #fff; font-size: 3.5rem; font-weight: 900; text-align: center; position: relative; z-index: 8003; line-height: 1.1; }
-        .tv-broken-active { animation: tv-shake 0.1s infinite; }
-        .glitch-active { animation: text-glitch 0.08s infinite, text-morph 1.5s infinite; }
-
-        @keyframes text-glitch {
-            0% { transform: translate(3px, -3px); text-shadow: -4px 0 #f0f, 4px 0 #0ff; }
-            50% { clip-path: inset(10% 0 60% 0); transform: translate(-3px, 3px); }
-            100% { transform: translate(0); }
-        }
-        @keyframes text-morph {
-            0%, 100% { content: "救済をウケる"; }
-            10% { content: "救濟ヲウケル"; color: #f00; }
-            20% { content: "死死死死死死"; }
-            30% { content: "DATA_CORRUPTED"; }
-            40% { content: "済をける"; }
-        }
-        @keyframes tv-shake {
-            0% { transform: translate(0,0) scale(1); filter: contrast(1.2); }
-            25% { transform: translate(8px, -4px) scale(1.02); }
-            75% { transform: translate(-8px, 4px) skewX(2deg); background: #1a0000; }
-            100% { transform: translate(0,0); }
-        }
-
-        #close-horror { position: absolute; top: 15px; right: 15px; color: #111; font-size: 0.8rem; z-index: 8010; padding: 10px; cursor: pointer; opacity: 0.3; }
-
-        /* DANMAKU */
-        .danmaku { position: fixed; white-space: nowrap; color: #fff; font-size: 2.3rem; font-weight: 900; z-index: 9000; cursor: pointer; text-shadow: 4px 4px 0 #000; }
-
-        /* EROTIC BANNER */
-        #erotic-banner { 
-            display: none; position: fixed; bottom: -120px; left: 0; width: 100%; height: 75px; 
-            background: linear-gradient(90deg, #f0f, #70f); color: #fff; z-index: 500; 
-            align-items: center; justify-content: center; text-decoration: none; transition: bottom 0.5s; 
-            font-weight: 900; cursor: pointer; border-top: 4px solid #fff; box-shadow: 0 -10px 20px rgba(255,0,255,0.6);
-            font-size: 1.2rem;
-        }
-
-        /* SUMMON EFFECTS */
-        .hissa-text { position: absolute; font-weight: 900; pointer-events: none; animation: virus-float 0.8s cubic-bezier(0.15, 0.85, 0.35, 1) forwards; z-index: 100; text-shadow: 4px 4px 0 #000; white-space: nowrap; }
-        @keyframes virus-float { 0% { opacity: 0; transform: scale(0.3) rotate(-20deg); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateY(-300px) scale(3.5) rotate(20deg); } }
-
-        /* POPUP */
-        #popup { 
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            background: #fff; color: #000; padding: 30px; border: 10px solid #f0f; z-index: 10000; 
-            text-align: center; width: 85%; box-shadow: 25px 25px 0 #000;
-        }
-        .pop-btn { padding: 15px 35px; border: none; font-size: 1.2rem; font-weight: 900; cursor: pointer; margin: 10px; transition: 0.2s; }
-        #btn-banana-no { background: #000; color: #fff; }
-        #btn-banana-yes { background: #f0f; color: #fff; }
+        /* [MAIN_INTERFACE] */
+        header { padding: 15px; border-bottom: 2px solid #0f0; background: rgba(0,20,0,0.9); text-align: center; position: relative; z-index: 500; }
+        .sys-header-text { margin: 0; font-size: 1.1rem; letter-spacing: 6px; text-shadow: 0 0 10px #0f0; }
+        .main-dashboard { padding: 20px; display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto; position: relative; z-index: 500; }
         
-        /* VIRUS ANIMATIONS */
-        .flash-red-alert { animation: flash-red-bg 0.1s infinite; }
-        @keyframes flash-red-bg { 0% { background: #000; } 50% { background: #400; } 100% { background: #000; } }
+        /* [OMEDETA_MODULE] */
+        .counter-panel { border: 3px double #f0f; background: rgba(30, 0, 30, 0.85); padding: 15px; text-align: center; box-shadow: 0 0 20px rgba(255,0,255,0.3); }
+        .counter-label { color: #f0f; font-size: 0.9rem; font-weight: bold; display: block; margin-bottom: 5px; }
+        .counter-value { color: #fff; font-size: 3rem; font-weight: 900; text-shadow: 0 0 15px #f0f; }
+
+        .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .status-node { border: 1px solid #0f0; background: rgba(0, 30, 0, 0.8); padding: 10px; font-size: 0.75rem; box-shadow: inset 0 0 8px #0f0; }
+
+        /* [SUMMON_CORE] */
+        #summon-trigger { 
+            width: 100%; padding: 25px; background: #0f0; color: #000; border: none; 
+            font-size: 1.8rem; font-weight: 900; cursor: pointer; border-radius: 8px; 
+            box-shadow: 0 10px 0 #070; transition: 0.05s; margin-top: 10px;
+        }
+        #summon-trigger:active { transform: translateY(6px); box-shadow: 0 4px 0 #070; }
+
+        /* [ANIMATIONS] */
+        .ghost-text { position: absolute; font-weight: 900; pointer-events: none; z-index: 800; animation: ghost-float 0.8s ease-out forwards; }
+        @keyframes ghost-float { 0% { opacity: 0; transform: scale(0.5); } 20% { opacity: 1; } 100% { opacity: 0; transform: scale(3) translateY(-200px); } }
+
+        /* [TRAP_OVERLAY] */
+        #kyusai-overlay { position: fixed; top: -110%; left: 0; width: 100%; height: 100%; background: #000; z-index: 9000; display: flex; align-items: center; justify-content: center; transition: top 1s cubic-bezier(0.8, 0, 0.2, 1); cursor: pointer; border-bottom: 10px solid #f00; }
+        #kyusai-text { color: #fff; font-size: 3.5rem; font-weight: bold; text-align: center; }
+        .glitch-fx { animation: glitch-anim 0.1s infinite; }
+        @keyframes glitch-anim { 0% { transform: translate(2px, -2px); text-shadow: -3px 0 #f0f; } 50% { transform: translate(-2px, 2px); text-shadow: 3px 0 #0ff; } 100% { transform: translate(0); } }
+        #trap-close-btn { position: absolute; top: 10px; right: 10px; color: #1a1a1a; font-size: 1rem; padding: 20px; z-index: 9010; }
+
+        /* [DANMAKU] */
+        .danmaku-msg { position: fixed; white-space: nowrap; color: #fff; font-size: 2.2rem; font-weight: 900; z-index: 9500; cursor: pointer; text-shadow: 3px 3px 0 #000; }
+        
+        /* [BANNERS] */
+        #koyoi-banner { display: none; position: fixed; bottom: -120px; left: 0; width: 100%; height: 75px; background: linear-gradient(90deg, #f0f, #70f); color: #fff; z-index: 1000; align-items: center; justify-content: center; font-weight: 900; transition: 0.5s; cursor: pointer; font-size: 1.2rem; }
+        
+        /* [BANANA_POPUP] */
+        #banana-popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; padding: 30px; border: 8px solid #f0f; z-index: 11000; text-align: center; width: 85%; box-shadow: 20px 20px 0 #000; }
+        .banana-btn { padding: 15px 35px; margin: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+        
+        .alert-flash { animation: flash-bg 0.1s infinite; }
+        @keyframes flash-bg { 0% { background: #000; } 50% { background: #600; } 100% { background: #000; } }
     </style>
 </head>
 <body>
 
-<div id="yt-player-container">
-    <div id="player-bgm"></div>
-    <div id="player-hai"></div>
-    <div id="player-chan"></div>
-    <div id="player-summon"></div>
+<div id="hissa-video-container">
+    <div id="yt-bgm"></div><div id="yt-hai"></div><div id="yt-chan"></div><div id="yt-summon"></div>
 </div>
 
-<div id="start-overlay">
-    <button id="start-btn" disabled>INITIALIZING HISSA_OS...</button>
-    <div id="loader-container">
-        <div id="hack-log"></div>
-        <div id="progress-wrapper"><div id="progress-bar"></div></div>
-        <div id="percent-text">0%</div>
+<div id="boot-overlay">
+    <button id="boot-init-btn" disabled>ENABLE SYSTEM</button>
+    <div id="boot-console-wrap">
+        <div id="boot-log"></div>
+        <div class="boot-progress-frame"><div id="boot-progress-bar"></div></div>
     </div>
 </div>
 
-<div id="horror-pop">
-    <div id="close-horror">CLOSE_SYS_1919810</div>
-    <div id="horror-text">救済をウケる<br>死死死死死死</div>
+<div id="kyusai-overlay">
+    <div id="kyusai-text">救済をウケる<br>死死死死死死</div>
+    <div id="trap-close-btn">×</div>
 </div>
 
-<canvas id="matrix"></canvas>
+<canvas id="matrix-bg"></canvas>
+<div id="koyoi-banner">貴方と今宵、愛し合いたい…♡</div>
 
-<a id="erotic-banner">貴方と今宵、愛し合いたい…♡</a>
-
-<div id="popup">
-    <p style="font-size: 1.4rem; font-weight: 900; margin-bottom: 20px;">
-        <span style="color:#f0f;">[CRITICAL WARNING]</span><br>
-        バナナはおやつに入りますか？
-    </p>
-    <div style="display: flex; justify-content: center; flex-wrap: wrap;">
-        <button id="btn-banana-no" class="pop-btn">はい</button>
-        <button id="btn-banana-yes" class="pop-btn">Yes</button>
-    </div>
+<div id="banana-popup">
+    <p style="font-weight:900; margin-bottom:20px;">⚠ WARNING: SYSTEM_CHECK<br>バナナはおやつに入りますか？</p>
+    <button id="ban-btn-hai" class="banana-btn" style="background:#000; color:#fff;">はい</button>
+    <button id="ban-btn-yes" class="banana-btn" style="background:#f0f; color:#fff;">Yes</button>
 </div>
 
-<header><h1>CODE: 1919810 [ULTIMATE-VIRUS]</h1></header>
+<header><h1 class="sys-header-text">INFECTED_HISSA_CORE_V6</h1></header>
 
-<div class="container">
-    <div class="panel" style="border-color: #0ff; color: #0ff;">
-        <div>SYSTEM_ACCESS: <span id="access-time">--:--:--</span></div>
-        <div>INFECTED_IP: <span id="user-ip">SEARCHING...</span></div>
-    </div>
-    
-    <div class="panel">
-        <div class="lucky-counter">おめでた回数：<span id="lucky-count">0</span>回</div>
+<div class="main-dashboard">
+    <div class="counter-panel">
+        <span class="counter-label">TOTAL_OMEDETA_COUNT</span>
+        <span class="counter-value" id="omedeta-display">0</span>
     </div>
 
-    <div class="panel" style="border-color:#ff00ff; color:#ff00ff;">
-        <div>LOCATION: <span id="hissa-pos">OVERWRITING...</span></div>
-        <div>VIRUS_STATUS: <span id="forecast" style="text-decoration: blink;">SPREADING</span></div>
+    <div class="status-grid">
+        <div class="status-node">CLOCK: <span id="sys-clock">--:--:--</span></div>
+        <div class="status-node">INFECTED_IP: <span id="sys-ip">SCANNING...</span></div>
+        <div class="status-node">LOCATION: <span id="sys-loc">WAITING</span></div>
+        <div class="status-node">VIRUS: <span style="color:#f00; text-decoration:blink;">ACTIVE</span></div>
     </div>
-    
-    <button class="btn-summon" id="main-summon-btn">HISSA 召喚</button>
+
+    <button id="summon-trigger">HISSA 召喚</button>
 </div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-    /* ============================================================
-       HISSA-ULTIMATE-VIRUS SCRIPT CORE
-       ============================================================ */
-    
     let players = { bgm: null, hai: null, chan: null, summon: null };
     let readyCount = 0;
-    let matrixSpeed = 40;
-    
     const PH_LINK = "https://jp.pornhub.com/";
     const HERR_LINK = "https://m.youtube.com/@Herr0404jp";
     const ALT_LINK = "https://www.altqw.com/";
 
-    // アクセス時刻の即時表示
-    const updateTime = () => {
-        document.getElementById('access-time').innerText = new Date().toLocaleTimeString();
-    };
-    updateTime();
-    document.getElementById('lucky-count').innerText = localStorage.getItem('hissa_lucky_count') || 0;
-
-    // YOUTUBE API INITIALIZATION
+    // [AUDIO_INITIALIZATION]
     function onYouTubeIframeAPIReady() {
-        const checkReady = () => {
-            readyCount++;
-            if (readyCount >= 4) {
-                const btn = document.getElementById('start-btn');
-                btn.innerText = 'ENABLE SYSTEM';
-                btn.disabled = false;
-            }
+        const setup = (p, id, vol = 100) => {
+            players[p] = new YT.Player('yt-' + p, {
+                videoId: id,
+                playerVars: { 'controls': 0, 'disablekb': 1, 'showinfo': 0, 'rel': 0, 'autoplay': 0 },
+                events: { onReady: (e) => { 
+                    e.target.setVolume(vol); readyCount++; 
+                    if(readyCount >= 4) document.getElementById('boot-init-btn').disabled = false; 
+                } }
+            });
         };
-
-        players.bgm = new YT.Player('player-bgm', {
-            videoId: 'eap7eQOkwTI',
-            playerVars: { 'autoplay': 0, 'loop': 1, 'playlist': 'eap7eQOkwTI', 'controls': 0 },
-            events: { onReady: (e) => { e.target.setVolume(35); checkReady(); } }
-        });
-        players.hai = new YT.Player('player-hai', { videoId: '7jfoXGh77xA', events: { onReady: checkReady } });
-        players.chan = new YT.Player('player-chan', { videoId: 'Wj7_EJR755o', events: { onReady: checkReady } });
-        players.summon = new YT.Player('player-summon', { videoId: '6k6wCRCKLn4', events: { onReady: checkReady } });
+        setup('bgm', 'eap7eQOkwTI', 35);
+        setup('hai', '7jfoXGh77xA');
+        setup('chan', 'Wj7_EJR755o');
+        setup('summon', '6k6wCRCKLn4');
     }
 
-    // START BUTTON LOGIC
-    document.getElementById('start-btn').onclick = () => {
-        document.getElementById('start-btn').style.display = 'none';
-        document.getElementById('loader-container').style.display = 'block';
-        
-        const log = document.getElementById('hack-log');
-        const bar = document.getElementById('progress-bar');
-        const pct = document.getElementById('percent-text');
-        
-        const hackMessages = [
-            "CONNECTING TO REMOTE SERVER [191.98.10.254]...",
-            "BYPASSING WINDOWS DEFENDER...",
-            "EXPLOITING BROWSER VULNERABILITY...",
-            "LOCAL_IP_LEAKED: 124.XXX.XXX.XXX",
-            "SCANNING PERSONAL FILES...",
-            "PHOTO_DATA_FOUND: 2,190 FILES",
-            "UPLOADING TO DARKNET...",
-            "INSTALLING KEYLOGGER...",
-            "INFECTING BOOT_SECTOR...",
-            "HISSA_ENGINE.exe EXECUTED",
-            "REPLACING SYSTEM_FONTS...",
-            "ACCESSING CAMERA... SUCCESS",
-            "DECRYPTING CRYPTO_WALLET...",
-            "ERASING TRACES...",
-            "SYSTEM_TAKEOVER_COMPLETE."
-        ];
-
-        let progress = 0;
-        let msgIdx = 0;
-        
-        let interval = setInterval(() => {
-            if (progress >= 100) {
-                clearInterval(interval);
-                document.body.classList.add('flash-red-alert');
-                setTimeout(() => {
-                    document.body.classList.remove('flash-red-alert');
-                    startMainSystem();
-                }, 800);
-            } else {
-                progress += Math.random() * 6;
-                if(progress > 100) progress = 100;
-                bar.style.width = progress + '%';
-                pct.innerText = Math.floor(progress) + '%';
-                
-                if(Math.random() > 0.65) {
-                    const line = document.createElement('div');
-                    line.innerText = `> ${hackMessages[msgIdx % hackMessages.length]} [OK]`;
-                    log.appendChild(line);
-                    log.scrollTop = log.scrollHeight;
-                    msgIdx++;
+    // [BOOT_SEQUENCE]
+    document.getElementById('boot-init-btn').onclick = function() {
+        this.style.display = 'none';
+        document.getElementById('boot-console-wrap').style.display = 'block';
+        const log = document.getElementById('boot-log'), bar = document.getElementById('boot-progress-bar');
+        const lines = ["BYPASSING FIREWALL...", "IP_FOUND: 124.X.X.X", "ACCESSING_WEB_STORAGE...", "INJECTING_GHOST_SCRIPT...", "UPLOADING_USER_DATA: 15%", "UPLOADING_USER_DATA: 88%", "VIRUS_STATUS: GREEN", "ACCESS_GRANTED."];
+        let p = 0, lIdx = 0;
+        let itv = setInterval(() => {
+            p += Math.random() * 6;
+            if (p >= 100) { clearInterval(itv); startCore(); }
+            else {
+                bar.style.width = p + '%';
+                if(Math.random() > 0.7) {
+                    const d = document.createElement('div'); d.innerText = "> " + lines[lIdx % lines.length];
+                    log.appendChild(d); log.scrollTop = log.scrollHeight; lIdx++;
                 }
             }
-        }, 90);
+        }, 70);
     };
 
-    function startMainSystem() {
-        document.getElementById('start-overlay').style.display = 'none';
-        if (players.bgm) players.bgm.playVideo();
-        document.getElementById('user-ip').innerText = `124.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.XXX`;
-
-        // 1分後の地獄（救済演出）
+    function startCore() {
+        document.getElementById('boot-overlay').style.display = 'none';
+        players.bgm.playVideo(); players.bgm.setLoop(true);
+        document.getElementById('omedeta-display').innerText = localStorage.getItem('hissa_lucky_count') || 0;
+        document.getElementById('sys-ip').innerText = `124.${Math.floor(Math.random()*255)}.8.10`;
+        
+        // 1分後の「救済演出」
         setTimeout(() => {
-            matrixSpeed = 15; // 背景を高速化
-            const p = document.getElementById('horror-pop');
-            p.style.top = '0';
-            p.classList.add('tv-broken-active');
-            document.getElementById('horror-text').classList.add('glitch-active');
-            
-            p.onclick = (e) => { 
-                if(e.target.id !== 'close-horror') {
-                    Object.values(players).forEach(p => { if(p.pauseVideo) p.pauseVideo(); });
-                    window.location.href = PH_LINK; 
-                }
-            };
-            setTimeout(startDanmaku, 3000);
+            const ov = document.getElementById('kyusai-overlay');
+            ov.style.top = '0';
+            document.getElementById('kyusai-text').classList.add('glitch-fx');
+            ov.onclick = (e) => { if(e.target.id !== 'trap-close-btn') window.location.href = PH_LINK; };
+            startDanmaku();
         }, 60000);
 
-        // 6秒バナナポップアップ
+        // 各種インターバル
+        setInterval(() => { document.getElementById('sys-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+        setInterval(() => { document.getElementById('banana-popup').style.display = 'block'; }, 6000);
         setInterval(() => {
-            document.getElementById('popup').style.display = 'block';
-        }, 6000);
-
-        // 8秒エロバナー
-        setInterval(() => {
-            const b = document.getElementById('erotic-banner');
-            b.style.display = 'flex'; b.style.bottom = '0px';
+            const b = document.getElementById('koyoi-banner'); b.style.display = 'flex'; b.style.bottom = '0';
             setTimeout(() => b.style.bottom = '-120px', 4000);
         }, 8000);
-        
-        // ステータス更新（3秒ごと）
-        setInterval(() => {
-            document.getElementById('hissa-pos').innerText = ["マリアナ海溝", "北緯35.6度", "あなたの背後", "ブラジル奥地", "Hissaの布団裏"][Math.floor(Math.random()*5)];
-            document.getElementById('forecast').innerText = ["感染拡大", "臨界点突破", "ガッタイ中", "ワン・ツー待機"][Math.floor(Math.random()*4)];
-        }, 3000);
+        setInterval(() => { document.getElementById('sys-loc').innerText = ["マリアナ海溝", "背後", "あなたの脳内", "ブラジル", "Hissaの寝床"][Math.floor(Math.random()*5)]; }, 3000);
     }
 
-    // HISSA 召喚ロジック（連打耐性強化）
-    document.getElementById('main-summon-btn').onclick = () => {
-        // 音声を最初から強制再生（連打対応）
-        if (players.summon) { 
-            players.summon.seekTo(0); 
-            players.summon.playVideo(); 
-        }
-
-        // 0.6%の確率で大当たり
+    // [SUMMON_LOGIC]
+    document.getElementById('summon-trigger').onclick = () => {
+        // 連打対応: seekTo(0)で即座に最初から再生
+        players.summon.seekTo(0); players.summon.playVideo();
+        
+        // 0.6% あたり演出
         if (Math.random() < 0.006) {
-            let count = parseInt(localStorage.getItem('hissa_lucky_count') || 0) + 1;
-            localStorage.setItem('hissa_lucky_count', count);
-            document.getElementById('lucky-count').innerText = count;
-            document.body.classList.add('flash-red-alert');
-            
-            if (players.chan) { players.chan.seekTo(0); players.chan.playVideo(); }
-            createFloatingText("ウフンっ♡ｿｳﾖﾝｯ♡", "#ff00ff");
-            setTimeout(() => document.body.classList.remove('flash-red-alert'), 1000);
+            let c = parseInt(localStorage.getItem('hissa_lucky_count') || 0) + 1;
+            localStorage.setItem('hissa_lucky_count', c);
+            document.getElementById('omedeta-display').innerText = c;
+            document.body.classList.add('alert-flash');
+            players.chan.seekTo(0); players.chan.playVideo();
+            popMsg("ウフンっ♡ｿｳﾖﾝｯ♡", "#f0f");
+            setTimeout(() => document.body.classList.remove('alert-flash'), 1000);
             return;
         }
 
-        // 通常セリフ
-        const msgs = [
-            "どう、わぁたぁしぃ〜♡", "こんなものなの〜♡", "嫌いよ、度胸無し💢",
-            "ハイパーボぃぃぃぃスッ！！！", "スー↴パー↴ボイース↗", "歓迎よ〜",
-            "マッチッポンプッ", "ガッタイ！！", "アンタなぁ〜", "救済が必要ですな"
-        ];
-        createFloatingText(msgs[Math.floor(Math.random()*msgs.length)]);
+        const s = ["どう、わぁたぁしぃ〜♡", "ハイパーボぃぃぃぃスッ！！！", "マッチッポンプッ", "アンタなぁ〜", "救済が必要ですな", "こんなものなの〜♡", "嫌いよ、度胸無し💢", "スー↴パー↴ボイース↗", "歓迎よ〜", "ガッタイ！！"];
+        popMsg(s[Math.floor(Math.random()*s.length)]);
     };
 
-    function createFloatingText(txt, color) {
-        const h = document.createElement('div');
-        h.className = 'hissa-text';
-        h.innerText = txt;
-        h.style.left = (Math.random()*70 + 15) + '%';
-        h.style.top = (Math.random()*40 + 30) + '%';
-        h.style.color = color || (txt.includes('♡') ? "#ff00ff" : "#0f0");
-        document.body.appendChild(h);
-        setTimeout(() => h.remove(), 750);
+    function popMsg(t, c) {
+        const e = document.createElement('div'); e.className = 'ghost-text'; e.innerText = t;
+        e.style.left = (Math.random()*60+20) + '%'; e.style.top = (Math.random()*40+30) + '%';
+        e.style.color = c || "#0f0"; document.body.appendChild(e); setTimeout(() => e.remove(), 800);
     }
 
-    // 弾幕（ニコニコ風）
     function startDanmaku() {
-        const timer = setInterval(() => {
-            const b = document.createElement('div');
-            b.className = 'danmaku';
-            b.innerText = "ぽるのはぶはこちら";
-            b.style.top = (Math.random() * 85 + 5) + "%";
-            b.style.left = "110%";
-            b.animate([
-                { left: '110%' },
-                { left: '-150%' }
-            ], { duration: 3500, iterations: 1 });
-            
-            b.onclick = (e) => { 
-                e.stopPropagation(); 
-                Object.values(players).forEach(p => { if(p.pauseVideo) p.pauseVideo(); });
-                window.location.href = PH_LINK; 
-            };
-            document.body.appendChild(b);
-            setTimeout(() => b.remove(), 3500);
-            
-            // 救済演出が終わっていたら停止
-            if(document.getElementById('horror-pop').style.top !== '0px') clearInterval(timer);
-        }, 380);
+        setInterval(() => {
+            const d = document.createElement('div'); d.className = 'danmaku-msg'; d.innerText = "ぽるのはぶはこちら";
+            d.style.top = (Math.random()*85) + '%'; d.style.left = '110%';
+            d.animate([{left:'110%'}, {left:'-150%'}], {duration:3000});
+            d.onclick = (e) => { e.stopPropagation(); window.location.href = PH_LINK; };
+            document.body.appendChild(d); setTimeout(() => d.remove(), 3000);
+        }, 400);
     }
 
-    // BUTTON ACTIONS
-    document.getElementById('close-horror').onclick = (e) => { 
-        e.stopPropagation(); 
-        Object.values(players).forEach(p => { if(p.pauseVideo) p.pauseVideo(); });
-        window.location.href = ALT_LINK; 
-    };
-    document.getElementById('erotic-banner').onclick = () => { window.location.href = HERR_LINK; };
-    document.getElementById('btn-banana-no').onclick = () => { 
-        document.getElementById('popup').style.display='none'; 
-        if(players.hai) { players.hai.seekTo(0); players.hai.playVideo(); }
-    };
-    document.getElementById('btn-banana-yes').onclick = () => { 
-        Object.values(players).forEach(p => { if(p.pauseVideo) p.pauseVideo(); });
-        window.location.href = "https://youtu.be/9i53HSOS3U4"; 
-    };
+    // [EVENT_HANDLERS]
+    document.getElementById('trap-close-btn').onclick = (e) => { e.stopPropagation(); window.location.href = ALT_LINK; };
+    document.getElementById('koyoi-banner').onclick = () => window.location.href = HERR_LINK;
+    document.getElementById('ban-btn-hai').onclick = () => { document.getElementById('banana-popup').style.display='none'; players.hai.seekTo(0); players.hai.playVideo(); };
+    document.getElementById('ban-btn-yes').onclick = () => window.location.href = "https://youtu.be/9i53HSOS3U4";
 
-    // MATRIX ANIMATION
-    const canvas = document.getElementById('matrix'), ctx = canvas.getContext('2d');
-    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-    window.addEventListener('resize', resize); resize();
-    
-    const drops = Array(Math.floor(canvas.width/15)).fill(1);
-    function drawMatrix() {
-        ctx.fillStyle = "rgba(0,0,0,0.18)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0f0";
-        ctx.font = "15px monospace";
-        drops.forEach((y, i) => {
-            const char = "01HISSA"[Math.floor(Math.random()*7)];
-            ctx.fillText(char, i*15, y*15);
-            if(y*15 > canvas.height && Math.random() > 0.98) drops[i] = 0;
-            drops[i]++;
+    // [MATRIX_RENDER]
+    const cv = document.getElementById('matrix-bg'), cx = cv.getContext('2d');
+    cv.width = window.innerWidth; cv.height = window.innerHeight;
+    const cols = Array(Math.floor(cv.width/15)).fill(1);
+    setInterval(() => {
+        cx.fillStyle = "rgba(0,0,0,0.15)"; cx.fillRect(0,0,cv.width,cv.height);
+        cx.fillStyle = "#0f0"; cx.font = "15px monospace";
+        cols.forEach((y, i) => {
+            cx.fillText("01HISSA"[Math.floor(Math.random()*7)], i*15, y*15);
+            if(y*15 > cv.height && Math.random() > 0.98) cols[i] = 0; cols[i]++;
         });
-    }
-    setInterval(drawMatrix, 45); // matrixSpeedを反映させる場合はここを動的に変更
+    }, 50);
 </script>
 </body>
 </html>
