@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HISSA WATCHER [ULTIMATE] v7.0</title>
+    <style>
+        body { background-color: #000; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
+        #matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.2; }
+        .scanline { width: 100%; height: 2px; background: rgba(255, 0, 0, 0.5); position: absolute; top: 0; z-index: 10; animation: scan 4s linear infinite; pointer-events: none; }
+        @keyframes scan { from { top: 0; } to { top: 100%; } }
+        
+        #start-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        #start-btn { padding: 30px; border: 4px solid #0f0; background: none; color: #0f0; font-size: 2rem; font-weight: bold; cursor: pointer; box-shadow: 0 0 30px #0f0; }
+
+        header { padding: 15px; border-bottom: 2px solid #0f0; background: rgba(0, 30, 0, 0.9); }
+        .container { height: 85vh; overflow-y: auto; padding: 20px; }
+        .panel { border: 1px solid #0f0; padding: 10px; margin-bottom: 15px; background: rgba(0, 10, 0, 0.9); box-shadow: inset 0 0 10px #0f0; text-align: left; font-size: 0.9rem; }
+        .btn-summon { background: #0f0; color: #000; border: none; padding: 20px; width: 100%; font-size: 1.5rem; font-weight: bold; cursor: pointer; }
+        
+        #erotic-banner { display: none; position: fixed; bottom: -100px; left: 0; width: 100%; height: 60px; background: #ff00ff; color: #fff; z-index: 500; font-weight: bold; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: bottom 0.5s; }
+        #popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; color: #000; padding: 30px; border: 5px solid #ff00ff; z-index: 1000; text-align: center; font-weight: bold; }
+        #beast { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; background: #000; }
+        #beast img { width: 100%; height: 100%; object-fit: contain; }
+        
+        .hissa-text { position: absolute; font-weight: bold; pointer-events: none; animation: float 1.5s forwards; z-index: 100; }
+        @keyframes float { 0% { opacity: 1; } 100% { opacity: 0; transform: translateY(-250px) scale(3); } }
+        .info-label { color: #aaa; font-size: 0.7rem; }
+    </style>
+</head>
+<body>
+
+<div id="start-overlay">
+    <div style="color:#0f0; margin-bottom: 20px;">SECURITY CHECK REQUIRED...</div>
+    <button id="start-btn" onclick="startSystem()">ENTER SYSTEM</button>
+</div>
+
+<div class="scanline"></div>
+<canvas id="matrix"></canvas>
+
+<div id="beast" onclick="this.style.display='none'">
+    <img src="https://pbs.twimg.com/media/CP1x_U3UAAAj6_J.jpg" id="beast-img">
+</div>
+
+<a href="https://m.youtube.com/@Herr0404jp" target="_blank" id="erotic-banner">貴方と今宵、愛し合いたい…♡</a>
+
+<div id="popup">
+    <p>バナナはおやつに入りますか？</p>
+    <button onclick="bananaChoice('yes_jp')">はい</button>
+    <button onclick="bananaChoice('yes_en')">Yes</button>
+</div>
+
+<header>
+    <h1>HISSA WATCHER [COMPLETE]</h1>
+</header>
+
+<div class="container" id="main-area">
+    <div class="panel">
+        <div><span class="info-label">YOUR IP:</span> <span id="user-ip">192.168.0.1</span></div>
+        <div><span class="info-label">ACCESS TIME:</span> <span id="current-time">00:00:00</span></div>
+    </div>
+
+    <div class="panel" style="color: #ff00ff;">
+        <div><span class="info-label" style="color:#ff00ff;">HISSA LOC:</span> <span id="hissa-pos">SEARCHING...</span></div>
+        <div><span class="info-label" style="color:#ff00ff;">STATUS:</span> <span id="forecast">WAITING</span></div>
+    </div>
+
+    <button class="btn-summon" onclick="summonHissa()">HISSA 召喚</button>
+    
+    <div class="panel" style="margin-top:20px;">
+        <div class="info-label">VOICE LOG:</div>
+        <div id="quote" style="font-size: 1.1rem; color: #0ff;"></div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const drops = Array(Math.floor(canvas.width/14)).fill(1);
+    function draw() {
+        ctx.fillStyle = "rgba(0,0,0,0.05)"; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = "#0f0"; ctx.font = "14px monospace";
+        drops.forEach((y,i)=>{
+            ctx.fillText("01HISSA"[Math.floor(Math.random()*7)], i*14, y*14);
+            if(y*14>canvas.height && Math.random()>0.975) drops[i]=0; drops[i]++;
+        });
+    }
+    setInterval(draw, 50);
+
+    let audioCtx;
+    function startSystem() {
+        document.getElementById('start-overlay').style.display = 'none';
+        audioCtx = new(window.AudioContext||window.webkitAudioContext)();
+        // 偽IP生成
+        document.getElementById('user-ip').innerText = `124.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`;
+        squeak();
+    }
+
+    // 時計
+    setInterval(()=>{
+        const now = new Date();
+        document.getElementById('current-time').innerText = now.toLocaleTimeString();
+    }, 1000);
+
+    // Hissa位置情報
+    const spots = ["北緯35.6度 東経139.7度", "マリアナ海溝底 10,911m", "ブラジル アマゾン奥地", "月面 静かの海", "Hissaの布団の裏側", "時空の狭間"];
+    setInterval(()=>{
+        document.getElementById('hissa-pos').innerText = spots[Math.floor(Math.random()*spots.length)];
+        document.getElementById('forecast').innerText = ["ガッタイ中", "ワン・ツー待機", "臨界点突破", "ウフン待ち"][Math.floor(Math.random()*4)];
+    }, 3000);
+
+    function squeak() {
+        if(!audioCtx) return;
+        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+        o.type = 'triangle'; o.frequency.setValueAtTime(300+Math.random()*200, audioCtx.currentTime);
+        g.gain.setValueAtTime(0.05, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+        o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + 0.3);
+    }
+
+    function sexyVoice() {
+        if(!audioCtx) return;
+        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+        o.type = 'sine'; o.frequency.setValueAtTime(150, audioCtx.currentTime);
+        o.frequency.exponentialRampToValueAtTime(350, audioCtx.currentTime + 0.8);
+        g.gain.setValueAtTime(0.1, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+        o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + 0.8);
+    }
+
+    function summonHissa() {
+        const h = document.createElement('div'); h.className = 'hissa-text';
+        const v = ["どう、わぁたぁしぃ〜♡", "こんなものなの〜♡", "嫌いよ、度胸無し💢", "ハイパーボぃぃぃぃスッ！！！", "スー↴パー↴ボイース↗", "歓迎よ〜", "マッチッポンプッ", "ガッタイ！！", "アンタなぁ〜", "ワン・ツー", "ウフンっ♡ｿｳﾖﾝｯ♡"];
+        h.innerText = v[Math.floor(Math.random()*v.length)];
+        h.style.color = h.innerText.includes('♡') ? "#ff00ff" : "#0f0";
+        h.style.left = Math.random()*60+20+'%'; h.style.top='50%';
+        document.getElementById('main-area').appendChild(h);
+        squeak();
+        setTimeout(()=>h.remove(), 1500);
+    }
+
+    setInterval(()=> { document.getElementById('popup').style.display='block'; }, 6000);
+    function bananaChoice(c){
+        document.getElementById('popup').style.display='none';
+        if(c==='yes_jp') sexyVoice();
+        else { document.getElementById('beast').style.display='block'; setTimeout(()=>document.getElementById('beast').style.display='none', 2000); }
+    }
+
+    setInterval(()=> {
+        const b = document.getElementById('erotic-banner'); b.style.display='flex'; b.style.bottom='0px';
+        setTimeout(()=> b.style.bottom='-100px', 2000);
+    }, 3000);
+
+    const quotes = ["どう、わぁたぁしぃ〜♡", "ハイパーボぃぃぃぃスッ！！！", "マッチッポンプッ", "アンタなぁ〜"];
+    setInterval(()=> { document.getElementById('quote').innerText = quotes[Math.floor(Math.random()*quotes.length)]; }, 4000);
+</script>
+</body>
+</html>
