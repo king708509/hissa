@@ -27,7 +27,7 @@
         #matrix-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; pointer-events: none; }
         #hissa-video-container { position: absolute; top: -999px; left: -999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
-        /* [NEW: WARNING_SEQUENCE_STYLE] */
+        /* [WARNING_SEQUENCE_STYLE] */
         #warning-seq { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 15000; display: none; 
@@ -73,7 +73,8 @@
 
         /* [TRAP_OVERLAY_SYSTEM] */
         #kyusai-overlay { position: fixed; top: -110%; left: 0; width: 100%; height: 100%; background: #000; z-index: 9000; display: flex; align-items: center; justify-content: center; transition: top 1s cubic-bezier(0.8, 0, 0.2, 1); cursor: pointer; border-bottom: 10px solid #f00; }
-        #kyusai-text { color: #fff; font-size: 3.5rem; font-weight: bold; text-align: center; }
+        /* 文字色を赤色(#f00)に修正 */
+        #kyusai-text { color: #f00; font-size: 3.5rem; font-weight: bold; text-align: center; text-shadow: 0 0 15px rgba(255,0,0,0.5); }
         .glitch-fx { animation: glitch-anim 0.1s infinite; }
         
         #trap-close-btn { position: absolute; top: 10px; right: 10px; color: #333; font-size: 1.2rem; padding: 15px; z-index: 9010; font-weight: bold; cursor: pointer; }
@@ -131,7 +132,7 @@
     <button id="ban-btn-yes" class="banana-btn" style="background:#f0f; color:#fff;">Yes</button>
 </div>
 
-<header><h1 class="sys-header-text">INFECTED_HISSA_CORE_V6</h1></header>
+<header><h1 class="sys-header-text">INFECTED_HISSA_CORE_FINAL</h1></header>
 
 <div class="main-dashboard">
     <div class="counter-panel">
@@ -161,10 +162,10 @@
     const FANZA_LINK = "https://www.dmm.co.jp/top/-/fanza/";
 
     function onYouTubeIframeAPIReady() {
-        const setup = (p, id, vol = 100) => {
+        const setup = (p, id, vol = 100, loop = 1) => {
             players[p] = new YT.Player('yt-' + p, {
                 videoId: id,
-                playerVars: { 'controls': 0, 'disablekb': 1, 'showinfo': 0, 'rel': 0, 'autoplay': 0, 'loop': 1, 'playlist': id },
+                playerVars: { 'controls': 0, 'disablekb': 1, 'showinfo': 0, 'rel': 0, 'autoplay': 0, 'loop': loop, 'playlist': id },
                 events: { onReady: (e) => { 
                     e.target.setVolume(vol); readyCount++; 
                     if(readyCount >= 4) document.getElementById('boot-init-btn').disabled = false; 
@@ -172,49 +173,39 @@
             });
         };
         setup('bgm', 'eap7eQOkwTI', 20); 
-        setup('hai', '7jfoXGh77xA'); 
+        setup('hai', '7jfoXGh77xA', 100, 0); // バナナ音(hai)はループOFF
         setup('chan', 'Wj7_EJR755o'); 
-        setup('summon', '6k6wCRCKLn4');
+        setup('summon', '6k6wCRCKLn4', 100, 0); // 召喚音も単発
     }
 
-    // --- [NEW: WARNING_LOGIC] ---
     function startWarningSequence() {
         const seq = document.getElementById('warning-seq');
         const txt = document.getElementById('warning-text');
         seq.style.display = 'flex';
-        
         const msg = "THIS IS A JOKE GAME.\nTARGET AGE: 18+\n\nこのシステムは18歳以上を対象とした\nジョークプログラムです。\n全ての演出はフィクションであり、\n実在の人物・団体とは関係ありません。\n\nDO YOU UNDERSTAND?";
         let i = 0;
-        
         function type() {
             if (i < msg.length) {
-                txt.innerText += msg.charAt(i);
-                i++;
-                setTimeout(type, 35);
+                txt.innerText += msg.charAt(i); i++; setTimeout(type, 35);
             }
         }
         type();
-
         setTimeout(() => {
-            seq.style.transition = 'opacity 0.8s';
-            seq.style.opacity = '0';
-            setTimeout(() => {
-                seq.style.display = 'none';
-                runActualBoot(); 
-            }, 800);
+            seq.style.transition = 'opacity 0.8s'; seq.style.opacity = '0';
+            setTimeout(() => { seq.style.display = 'none'; runActualBoot(); }, 800);
         }, 5500);
     }
 
     document.getElementById('boot-init-btn').onclick = function() {
         if(players.bgm) players.bgm.playVideo();
         this.style.display = 'none';
-        startWarningSequence(); // 警告からスタート
+        startWarningSequence();
     };
 
     function runActualBoot() {
         document.getElementById('boot-console-wrap').style.display = 'block';
         const log = document.getElementById('boot-log'), bar = document.getElementById('boot-progress-bar');
-        const lines = ["BYPASSING FIREWALL...", "IP_FOUND: 124.X.X.X", "ACCESSING_WEB_STORAGE...", "INJECTING_GHOST_SCRIPT...", "UPLOADING_USER_DATA: 15%", "UPLOADING_USER_DATA: 88%", "VIRUS_STATUS: GREEN", "ACCESS_GRANTED."];
+        const lines = ["BYPASSING FIREWALL...", "IP_FOUND: 124.X.X.X", "ACCESSING_WEB_STORAGE...", "INJECTING_GHOST_SCRIPT...", "UPLOADING_USER_DATA: 88%", "VIRUS_STATUS: GREEN", "ACCESS_GRANTED."];
         let p = 0, lIdx = 0;
         let itv = setInterval(() => {
             p += Math.random() * 6;
@@ -235,7 +226,8 @@
         document.getElementById('omedeta-display').innerText = localStorage.getItem('hissa_lucky_count') || 0;
         document.getElementById('sys-ip').innerText = `124.${Math.floor(Math.random()*255)}.8.10`;
         
-        setTimeout(showKyusai, 60000);
+        // 救済の出現サイクルを30秒に変更
+        setTimeout(showKyusai, 30000);
 
         setInterval(() => { document.getElementById('sys-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
         setInterval(() => { document.getElementById('banana-popup').style.display = 'block'; }, 6000);
@@ -250,61 +242,46 @@
         const ov = document.getElementById('kyusai-overlay');
         ov.style.top = '0';
         document.getElementById('kyusai-text').classList.add('glitch-fx');
-        
         ov.onclick = (e) => { 
             if(e.target.id !== 'skip-countdown-btn' && e.target.id !== 'trap-close-btn') window.location.href = PH_LINK; 
         };
-
         const skipBtn = document.getElementById('skip-countdown-btn');
         let count = 5;
         skipBtn.style.display = 'block';
         skipBtn.innerText = `広告をスキップまで ${count}...`;
-
         const countItv = setInterval(() => {
             count--;
-            if(count > 0) {
-                skipBtn.innerText = `広告をスキップまで ${count}...`;
-            } else {
-                clearInterval(countItv);
-                skipBtn.innerText = `広告をスキップ ≫`;
-            }
+            if(count > 0) skipBtn.innerText = `広告をスキップまで ${count}...`;
+            else { clearInterval(countItv); skipBtn.innerText = `広告をスキップ ≫`; }
         }, 1000);
-
         skipBtn.onclick = (e) => {
             e.stopPropagation();
-            if(count > 0) {
-                window.location.href = FANZA_LINK;
-            } else {
-                closeKyusai();
-            }
+            if(count > 0) window.location.href = FANZA_LINK;
+            else closeKyusai();
         };
         startDanmaku();
     }
 
     function closeKyusai() {
-        const ov = document.getElementById('kyusai-overlay');
-        ov.style.top = '-110%';
+        document.getElementById('kyusai-overlay').style.top = '-110%';
         if(danmakuItv) clearInterval(danmakuItv);
-        setTimeout(showKyusai, 60000);
+        // 救済の再出現も30秒に変更
+        setTimeout(showKyusai, 30000);
     }
 
     document.getElementById('trap-close-btn').onclick = (e) => {
-        e.stopPropagation();
-        window.location.href = ALT_LINK;
+        e.stopPropagation(); window.location.href = ALT_LINK;
     };
 
     document.getElementById('summon-trigger').onclick = () => {
         if(players.summon) { players.summon.seekTo(0); players.summon.playVideo(); }
-        
         if (Math.random() < 0.006) {
             let c = parseInt(localStorage.getItem('hissa_lucky_count') || 0) + 1;
             localStorage.setItem('hissa_lucky_count', c);
             document.getElementById('omedeta-display').innerText = c;
-            
             document.body.classList.add('alert-flash');
             if(players.chan) { players.chan.seekTo(0); players.chan.playVideo(); }
             popMsg("ウフンっ♡ｿｳﾖﾝｯ♡", "#f0f");
-
             setTimeout(() => {
                 document.body.classList.remove('alert-flash');
                 document.getElementById('main-body').classList.add('system-invert');
@@ -344,9 +321,15 @@
     }
 
     document.getElementById('koyoi-banner').onclick = () => window.location.href = HERR_LINK;
+    
+    // バナナ「はい」ボタンの挙動修正
     document.getElementById('ban-btn-hai').onclick = () => { 
         document.getElementById('banana-popup').style.display='none'; 
-        if(players.hai) { players.hai.seekTo(0); players.hai.playVideo(); }
+        // はいを押したときだけ爆発音を再生
+        if(players.hai) { 
+            players.hai.seekTo(0); 
+            players.hai.playVideo(); 
+        }
     };
     document.getElementById('ban-btn-yes').onclick = () => window.location.href = "https://youtu.be/9i53HSOS3U4";
 
